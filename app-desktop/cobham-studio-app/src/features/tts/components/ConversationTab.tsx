@@ -12,6 +12,12 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { APP_NAME } from "@/config/branding";
 import { convertToMp3, synthesizeConversation } from "../api";
 import { downloadBlobAsFile } from "../audio-engine";
+import {
+  appendSpeakerLine,
+  buildValidSpeakerMapping,
+  extractSpeakers,
+  reconcileSpeakerVoices,
+} from "../conversation-script";
 import { LanguageSelect, useModelCaps } from "../model-caps";
 import type { HistoryEntry, VoiceOption } from "../types";
 import { groupVoices, voiceOptionLabel } from "../voice-label";
@@ -89,18 +95,6 @@ const SAMPLE_SCRIPTS_FOREIGN = [
   },
 ];
 
-const TRAILING_SPACE = /\s+$/;
-
-/** Tên "Người N" chưa dùng, để nút "Thêm nhân vật" không trùng nhân vật đã có. */
-function nextSpeakerName(existing: string[]): string {
-  const taken = new Set(existing.map((name) => name.toLowerCase()));
-  let n = existing.length + 1;
-  while (taken.has(`người ${n}`)) {
-    n += 1;
-  }
-  return `Người ${n}`;
-}
-
 const SPEAKER_COLORS = [
   "from-pink-500 to-rose-500",
   "from-cyan-500 to-blue-500",
@@ -164,17 +158,7 @@ export const ConversationTab: React.FC<ConversationTabProps> = ({
   // URL kết quả còn được dùng bởi lịch sử và thanh phát chung khi đổi tab.
 
   // Extract unique speakers from script
-  const detectedSpeakers = useMemo(() => {
-    const pattern = /^\s*(?:\[([^\]]+)\]|([^:]+))\s*:/gm;
-    const speakers = new Set<string>();
-    for (const match of script.matchAll(pattern)) {
-      const spk = (match[1] || match[2]).trim();
-      if (spk) {
-        speakers.add(spk);
-      }
-    }
-    return Array.from(speakers);
-  }, [script]);
+  const detectedSpeakers = useMemo(() => extractSpeakers(script), [script]);
 
   // Nhân vật bị app tự đổi giọng (giọng cũ đã bị xóa / đổi model): báo cho người
   // dùng, nếu không bài podcast ra đọc sai giọng mà không ai biết.
@@ -191,29 +175,15 @@ export const ConversationTab: React.FC<ConversationTabProps> = ({
     if (voices.length === 0) {
       return;
     }
-    const next = { ...mappingRef.current };
-    const replaced: Record<string, string> = {};
-    let changed = false;
-    detectedSpeakers.forEach((spk, idx) => {
-      if (voices.some((voice) => voice.id === next[spk])) {
-        return;
-      }
-      // Distribute distinct voices
-      const assignedVoice = voices[idx % voices.length];
-      const oldId = next[spk];
-      if (oldId) {
-        const oldName = voiceNamesRef.current[oldId] ?? oldId;
-        replaced[spk] =
-          `Giọng "${oldName}" của ${spk} không còn, đã đổi sang "${assignedVoice.name}".`;
-      }
-      next[spk] = assignedVoice.id;
-      changed = true;
-    });
-    voiceNamesRef.current = Object.fromEntries(
-      voices.map((voice) => [voice.id, voice.name])
+    const { changed, mapping, replaced, voiceNames } = reconcileSpeakerVoices(
+      detectedSpeakers,
+      voices,
+      mappingRef.current,
+      voiceNamesRef.current
     );
+    voiceNamesRef.current = voiceNames;
     if (changed) {
-      setSpeakerMapping(next);
+      setSpeakerMapping(mapping);
     }
     if (Object.keys(replaced).length > 0) {
       setReplacedVoices((prev) => ({ ...prev, ...replaced }));
@@ -223,9 +193,7 @@ export const ConversationTab: React.FC<ConversationTabProps> = ({
   // Người dùng tưởng hội thoại chỉ có 2 người: thêm sẵn một dòng nhân vật mới ở cuối
   // kịch bản và đặt con trỏ vào đó để gõ lời thoại ngay.
   const handleAddSpeaker = () => {
-    const line = `[${nextSpeakerName(detectedSpeakers)}]: `;
-    const trimmed = script.replace(TRAILING_SPACE, "");
-    const next = trimmed ? `${trimmed}\n${line}` : line;
+    const next = appendSpeakerLine(script, detectedSpeakers);
     setScript(next);
     requestAnimationFrame(() => {
       const el = scriptRef.current;
@@ -250,19 +218,14 @@ export const ConversationTab: React.FC<ConversationTabProps> = ({
 
     try {
       // Không âm thầm đổi sang giọng mặc định nếu giọng đã bị xóa hoặc đổi model.
-      if (
-        detectedSpeakers.some(
-          (speaker) =>
-            !voices.some((voice) => voice.id === speakerMapping[speaker])
-        )
-      ) {
+      const validMapping = buildValidSpeakerMapping(
+        detectedSpeakers,
+        speakerMapping,
+        voices
+      );
+      if (!validMapping) {
         throw new Error("Vui lòng chọn giọng hợp lệ cho từng nhân vật.");
       }
-      const validMapping = Object.fromEntries(
-        Object.entries(speakerMapping).filter(([, id]) =>
-          voices.some((v) => v.id === id)
-        )
-      );
       const res = await synthesizeConversation(apiUrl, {
         script,
         speakerMapping: validMapping,
