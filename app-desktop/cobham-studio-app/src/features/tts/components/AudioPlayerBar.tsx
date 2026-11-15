@@ -300,7 +300,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
           <label
             className={`flex shrink-0 cursor-pointer select-none items-center gap-1.5 rounded-lg border px-2 py-1.5 font-semibold text-xs transition-colors ${
               subtitlesEnabled
-                ? "border-violet-500/60 bg-violet-500/10 text-violet-700 dark:text-violet-300"
+                ? "border-violet-500/60 bg-violet-500/10 text-[var(--status-violet)]"
                 : "border-[var(--canvas-border)] text-[var(--canvas-muted)] hover:text-[var(--canvas-foreground)]"
             } ${isBusy ? "cursor-not-allowed opacity-50" : ""}`}
             title="Tạo kèm phụ đề .srt (mốc thời gian theo từng câu) để dùng khi dựng video"
@@ -321,7 +321,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
           <label
             className={`flex shrink-0 cursor-pointer select-none items-center gap-1.5 rounded-lg border px-2 py-1.5 font-semibold text-xs transition-colors ${
               stableEnabled
-                ? "border-sky-500/60 bg-sky-500/10 text-sky-700 dark:text-sky-300"
+                ? "border-sky-500/60 bg-sky-500/10 text-[var(--status-sky)]"
                 : "border-[var(--canvas-border)] text-[var(--canvas-muted)] hover:text-[var(--canvas-foreground)]"
             } ${isBusy ? "cursor-not-allowed opacity-50" : ""}`}
             title="Giữ ổn định: cùng văn bản và cùng giọng thì mỗi lần tạo ra giống hệt nhau. Tắt để mỗi lần có ngữ điệu khác."

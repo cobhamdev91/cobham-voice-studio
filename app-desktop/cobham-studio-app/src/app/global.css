@@ -133,6 +133,12 @@
   --emotion-amber: #92400e;
   --emotion-purple: #6b21a8;
   --emotion-slate: #475569;
+
+  /* Màu trạng thái/hành động theo token mode, tránh kẹp dark: thủ công. */
+  --status-amber: #b45309;
+  --status-violet: #6d28d9;
+  --status-sky: #0369a1;
+  --status-rose: #be123c;
 }
 
 .dark {
@@ -192,6 +198,11 @@
   --emotion-amber: #fcd34d;
   --emotion-purple: #d8b4fe;
   --emotion-slate: #cbd5e1;
+
+  --status-amber: #fbbf24;
+  --status-violet: #c4b5fd;
+  --status-sky: #7dd3fc;
+  --status-rose: #fb7185;
 }
 
 @layer base {

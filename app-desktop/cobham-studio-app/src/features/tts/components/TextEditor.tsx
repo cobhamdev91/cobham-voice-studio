@@ -9,14 +9,19 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { APP_NAME } from "@/config/branding";
 import { useModelCaps } from "../model-caps";
 import { cleanMarkdown } from "../text-tools";
 import { useCaretInsert } from "../use-caret-insert";
 import { EmotionBar } from "./EmotionBar";
-import { APP_NAME } from "@/config/branding";
 
 /** Thời gian hiện dòng thông báo cạnh nút Làm sạch. */
 const NOTICE_MS = 3000;
+
+/** Lớp nền dùng chung cho các nút công cụ trên thanh editor. */
+const TOOLBAR_BUTTON_CLASS =
+  "flex items-center gap-1 rounded-md px-2 py-1 font-medium text-xs transition-colors disabled:opacity-50";
+const TOOLBAR_NEUTRAL_CLASS = `${TOOLBAR_BUTTON_CLASS} text-[var(--canvas-muted)] hover:bg-[var(--canvas)] hover:text-[var(--canvas-foreground)]`;
 
 interface TextEditorProps {
   disabled?: boolean;
@@ -165,7 +170,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
           )}
           {canUndo && (
             <button
-              className="flex items-center gap-1 rounded-md px-2 py-1 font-medium text-amber-600 text-xs transition-colors hover:bg-amber-500/10 disabled:opacity-50 dark:text-amber-400"
+              className={`${TOOLBAR_BUTTON_CLASS} text-[var(--status-amber)] hover:bg-amber-500/10`}
               disabled={disabled}
               onClick={handleUndo}
               title="Trả lại văn bản trước khi làm sạch"
@@ -176,7 +181,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
             </button>
           )}
           <button
-            className="flex items-center gap-1 rounded-md px-2 py-1 font-medium text-muted-foreground text-xs transition-colors hover:bg-secondary/80 hover:text-foreground disabled:opacity-50"
+            className={TOOLBAR_NEUTRAL_CLASS}
             disabled={!text || disabled}
             onClick={handleClean}
             title="Bỏ ký hiệu định dạng khi dán từ ChatGPT/Gemini… (**đậm**, ## tiêu đề, > trích dẫn, link) để app không đọc thành tiếng"
@@ -188,7 +193,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
           {/* Tu dien viet cach doc tieng Viet: an khi mo hinh khong doc tieng Viet (Kokoro). */}
           {onOpenDictionary && readsVietnamese && (
             <button
-              className="flex items-center gap-1 rounded-md px-2 py-1 font-medium text-violet-600 text-xs transition-colors hover:bg-violet-500/10 dark:text-violet-400"
+              className={`${TOOLBAR_BUTTON_CLASS} text-[var(--status-violet)] hover:bg-violet-500/10`}
               onClick={onOpenDictionary}
               title="Từ điển phát âm - dạy app đọc từ viết tắt (KTX → ký túc xá)"
               type="button"
@@ -198,7 +203,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
             </button>
           )}
           <button
-            className="flex items-center gap-1 rounded-md px-2 py-1 font-medium text-muted-foreground text-xs transition-colors hover:bg-secondary/80 hover:text-foreground disabled:opacity-50"
+            className={TOOLBAR_NEUTRAL_CLASS}
             disabled={disabled}
             onClick={handlePaste}
             title="Dán từ Clipboard"
@@ -208,7 +213,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
             <span className="hidden sm:inline">Dán</span>
           </button>
           <button
-            className="flex items-center gap-1 rounded-md px-2 py-1 font-medium text-muted-foreground text-xs transition-colors hover:bg-secondary/80 hover:text-foreground disabled:opacity-50"
+            className={TOOLBAR_NEUTRAL_CLASS}
             disabled={!text || disabled}
             onClick={handleCopy}
             title="Sao chép văn bản"
@@ -218,7 +223,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
             <span className="hidden sm:inline">Chép</span>
           </button>
           <button
-            className="flex items-center gap-1 rounded-md px-2 py-1 font-medium text-rose-500 text-xs transition-colors hover:bg-rose-500/10 disabled:opacity-50"
+            className={`${TOOLBAR_BUTTON_CLASS} text-[var(--status-rose)] hover:bg-rose-500/10`}
             disabled={!text || disabled}
             onClick={() => onChange("")}
             title="Xóa toàn bộ"
@@ -251,7 +256,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
       {/* Các mẫu văn bản có sẵn */}
       <div className="flex flex-wrap items-center gap-1.5 border-[var(--canvas-border)] border-t bg-[var(--canvas-toolbar)] px-3 py-1.5 sm:px-3.5">
         <span className="mr-0.5 flex items-center gap-1 font-medium text-[var(--canvas-muted)] text-xs">
-          <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+          <Sparkles className="h-3.5 w-3.5 text-[var(--status-amber)]" />
           Mẫu:
         </span>
         {(multilingual ? PRESET_SAMPLES_FOREIGN : PRESET_SAMPLES).map(

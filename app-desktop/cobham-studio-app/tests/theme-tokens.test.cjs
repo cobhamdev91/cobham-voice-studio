@@ -402,3 +402,37 @@ test(".font-mono không bị ghi đè về --font-sans", () => {
     /\.font-mono[\s\S]{0,60}font-family:\s*var\(--font-sans\)/
   );
 });
+
+test("global.css khai báo --status-* trong cả :root và .dark", () => {
+  for (const name of [
+    "--status-amber",
+    "--status-violet",
+    "--status-sky",
+    "--status-rose",
+  ]) {
+    assert.match(block(":root"), new RegExp(`${name}:`), `:root thiếu ${name}`);
+    assert.match(block(".dark"), new RegExp(`${name}:`), `.dark thiếu ${name}`);
+  }
+});
+
+test("vùng main panel (TextEditor, EmotionBar, AudioPlayerBar) không kẹp dark: và không dùng màu chrome", () => {
+  for (const rel of [
+    "features/tts/components/TextEditor.tsx",
+    "features/tts/components/EmotionBar.tsx",
+    "features/tts/components/AudioPlayerBar.tsx",
+  ]) {
+    const src = fs.readFileSync(path.join(SRC, rel), "utf8");
+    assert.doesNotMatch(src, /\bdark:/, `${rel} vẫn dùng class dark: thủ công`);
+  }
+  for (const rel of [
+    "features/tts/components/TextEditor.tsx",
+    "features/tts/components/EmotionBar.tsx",
+  ]) {
+    const src = fs.readFileSync(path.join(SRC, rel), "utf8");
+    assert.doesNotMatch(
+      src,
+      /\b(bg-secondary|text-muted-foreground|text-foreground|border-border)\b/,
+      `${rel} vẫn dùng màu chrome thay vì token --canvas*`
+    );
+  }
+});

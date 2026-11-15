@@ -74,8 +74,8 @@ export const EmotionBar: React.FC<EmotionBarProps> = ({
     emotions = [];
   }
   return (
-    <div className="flex flex-wrap items-center justify-between gap-1.5 rounded-lg border border-border/60 bg-secondary/25 px-2.5 py-1 sm:py-1.5">
-      <div className="flex items-center gap-1.5 font-medium text-foreground/90 text-xs sm:text-[13px]">
+    <div className="flex flex-wrap items-center justify-between gap-1.5 rounded-lg border border-[var(--canvas-border)] bg-[var(--canvas)] px-2.5 py-1 sm:py-1.5">
+      <div className="flex items-center gap-1.5 font-medium text-[var(--canvas-foreground)] text-xs sm:text-[13px]">
         <Sparkles
           aria-hidden="true"
           className="h-3.5 w-3.5 text-[var(--emotion-amber)]"
