@@ -325,3 +325,10 @@ test("số liệu dùng font mono", () => {
   );
   assert.match(voice, /font-mono/);
 });
+
+test("trình phát bên trong .studio-player không vẽ thẻ sáng đè nền tối", () => {
+  const inner = allBlocks(".studio-audio-player").join("\n");
+  assert.doesNotMatch(inner, /var\(--card\)|var\(--popover\)/);
+  assert.match(block(".studio-export summary"), /var\(--canvas\)/);
+  assert.match(block(".studio-export-menu"), /var\(--canvas-toolbar\)/);
+});
