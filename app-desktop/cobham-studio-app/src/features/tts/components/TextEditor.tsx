@@ -159,7 +159,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
         {/* Công cụ văn bản */}
         <div className="flex items-center gap-1.5">
           {notice && (
-            <span className="hidden text-muted-foreground text-xs italic md:inline">
+            <span className="hidden text-[var(--canvas-muted)] text-xs italic md:inline">
               {notice}
             </span>
           )}
@@ -249,15 +249,15 @@ export const TextEditor: React.FC<TextEditorProps> = ({
       </div>
 
       {/* Các mẫu văn bản có sẵn */}
-      <div className="flex flex-wrap items-center gap-1.5 border-border/40 border-t bg-muted/20 px-3 py-1.5 sm:px-3.5">
-        <span className="mr-0.5 flex items-center gap-1 font-medium text-muted-foreground text-xs">
+      <div className="flex flex-wrap items-center gap-1.5 border-[var(--canvas-border)] border-t bg-[var(--canvas-toolbar)] px-3 py-1.5 sm:px-3.5">
+        <span className="mr-0.5 flex items-center gap-1 font-medium text-[var(--canvas-muted)] text-xs">
           <Sparkles className="h-3.5 w-3.5 text-amber-500" />
           Mẫu:
         </span>
         {(multilingual ? PRESET_SAMPLES_FOREIGN : PRESET_SAMPLES).map(
           (sample) => (
             <button
-              className="rounded-full border border-border/60 bg-secondary/80 px-2.5 py-0.5 font-medium text-foreground/80 text-xs transition-all hover:border-brand-500/40 hover:bg-secondary hover:text-foreground active:scale-95"
+              className="rounded-full border border-[var(--canvas-border)] bg-[var(--canvas)] px-2.5 py-0.5 font-medium text-[var(--canvas-foreground)] text-xs transition-all hover:border-[var(--canvas-accent)]/60 hover:bg-[var(--canvas-toolbar)] active:scale-95"
               disabled={disabled}
               key={sample.label}
               onClick={() => onChange(sample.text)}
