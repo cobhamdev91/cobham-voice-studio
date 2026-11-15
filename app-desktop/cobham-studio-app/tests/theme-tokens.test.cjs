@@ -464,3 +464,12 @@ test("Button hỗ trợ variant studio và các CTA chính tái sử dụng Butt
     );
   }
 });
+
+test("sóng âm thanh phát đọc token indigo thay vì hardcode teal/cyan", () => {
+  const src = fs.readFileSync(
+    path.join(SRC, "features/tts/components/AudioWaveformCanvas.tsx"),
+    "utf8"
+  );
+  assert.doesNotMatch(src, /#14b8a6|#06b6d4/);
+  assert.match(src, /--canvas-accent/);
+});

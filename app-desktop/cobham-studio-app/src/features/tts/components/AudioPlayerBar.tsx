@@ -1,7 +1,6 @@
 import {
   Anchor,
   Captions,
-  Download,
   Pause,
   Play,
   Square,
@@ -10,10 +9,16 @@ import {
   Zap,
 } from "lucide-react";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { toggleAudioPlayback } from "../playback";
+import { useAudioElementSync } from "../hooks/useAudioElementSync";
+import {
+  formatPlayerClock,
+  formatTtfa,
+  playbackStatusLabel,
+} from "../player-format";
 import type { PlaybackStatus } from "../types";
+import { AudioWaveformCanvas } from "./AudioWaveformCanvas";
+import { ExportMenu } from "./ExportMenu";
 
 /** Props cho thanh phát âm thanh, điều khiển tiến độ và tải xuống bản đọc. */
 interface AudioPlayerBarProps {
@@ -28,19 +33,17 @@ interface AudioPlayerBarProps {
   onChangeVolume: (vol: number) => void;
   onDownload: () => void;
   onDownloadMp3?: () => void;
-  /** Tai phu de .srt cua ban audio hien tai; undefined = ban nay khong co phu de. */
+  /** Tải phụ đề `.srt` của bản audio hiện tại; `undefined` = bản này không có phụ đề. */
   onDownloadSrt?: () => void;
   /** Bỏ trống ở tab không soạn văn bản: ẩn nút "Tạo giọng nói" (vẫn hiện "Dừng tạo" khi đang tạo). */
   onGenerateOrPlay?: () => void;
   onPlayingChange: (playing: boolean) => void;
   onStop: () => void;
-  /** "Giữ ổn định": seed cố định, cùng văn bản + giọng thì ra y hệt nhau. Chỉ
-   * TTS Studio truyền vào; bỏ trống thì ẩn công tắc. */
+  /** "Giữ ổn định": seed cố định, cùng văn bản + giọng thì ra y hệt nhau. */
   onToggleStable?: (enabled: boolean) => void;
   onToggleSubtitles?: (enabled: boolean) => void;
   playbackSpeed?: number;
-  /** Tiến độ ước lượng khi đang tạo giọng nói (không có tiến độ thật từ server
-   * cho request dạng batch). `null` khi không tạo giọng. */
+  /** Tiến độ ước lượng khi đang tạo giọng nói (`null` khi không tạo giọng). */
   progress?: { elapsedMs: number; percent: number } | null;
   selectedVoiceName: string;
   stableEnabled?: boolean;
@@ -49,25 +52,6 @@ interface AudioPlayerBarProps {
   ttfaMs: number | null;
   volume: number;
 }
-
-/** Chiều cao thanh sóng thứ `i`: theo dữ liệu phân tích khi đang phát, sóng giả khi
- *  chưa có dữ liệu, sóng tĩnh khi đang chờ. */
-const waveBarHeight = (
-  i: number,
-  numBars: number,
-  isLive: boolean,
-  data: Uint8Array | null,
-  height: number
-): number => {
-  if (!isLive) {
-    return 4 + Math.abs(Math.sin(i * 0.9) * Math.cos(i * 0.37)) * 16;
-  }
-  if (data && data.length > 0) {
-    const dataIdx = Math.floor((i / numBars) * data.length);
-    return Math.max(3, (data[dataIdx] / 255) * height);
-  }
-  return 3 + Math.sin(Date.now() / 150 + i) * 6;
-};
 
 /** Thanh phát âm thanh dùng chung dưới đáy workspace: sóng âm, nút tạo/dừng, tuỳ chọn phụ đề/ổn định và xuất file. */
 export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
@@ -97,152 +81,23 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
   progress,
 }) => {
   const downloadable = Boolean(audioBlob) || Boolean(canDownload);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const exportRef = useRef<HTMLDetailsElement | null>(null);
-
-  // Menu "Xuất file" là <details>: tự nó chỉ đóng khi bấm lại tiêu đề. Đóng thêm
-  // khi bấm ra ngoài, nhấn Esc, hoặc đã chọn một định dạng.
-  useEffect(() => {
-    const close = () => exportRef.current?.removeAttribute("open");
-    const onPointerDown = (e: PointerEvent) => {
-      const menu = exportRef.current;
-      if (menu?.open && !menu.contains(e.target as Node)) {
-        close();
-      }
-    };
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        close();
-      }
-    };
-    const onMenuClick = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (target.closest(".studio-export-menu button:not(:disabled)")) {
-        close();
-      }
-    };
-    const menu = exportRef.current;
-    menu?.addEventListener("click", onMenuClick);
-    document.addEventListener("pointerdown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    return () => {
-      menu?.removeEventListener("click", onMenuClick);
-      document.removeEventListener("pointerdown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-    };
-  }, []);
-  const [currentTime, setCurrentTime] = useState<number>(0);
-  const [duration, setDuration] = useState<number>(0);
-
-  // Đồng bộ âm lượng với phần tử âm thanh
-  // biome-ignore lint/correctness/useExhaustiveDependencies: audioElRef là RefObject giữ nguyên tham chiếu giữa các lần render
-  useEffect(() => {
-    const audio = audioElRef.current;
-    if (audio) {
-      audio.volume = volume;
-    }
-  }, [volume]);
-
-  // Xử lý sự kiện của phần tử âm thanh
-  const handleTimeUpdate = () => {
-    if (audioElRef.current) {
-      setCurrentTime(audioElRef.current.currentTime);
-    }
-  };
-
-  const handleLoadedMetadata = () => {
-    if (audioElRef.current) {
-      setDuration(audioElRef.current.duration || 0);
-    }
-  };
-
-  const togglePlayPause = () => {
-    if (!audioElRef.current) {
-      return;
-    }
-    void toggleAudioPlayback(audioElRef.current);
-  };
-
-  const handleSeek = (time: number) => {
-    if (audioElRef.current) {
-      audioElRef.current.currentTime = time;
-      setCurrentTime(time);
-    }
-  };
-
-  // Cả lịch sử và thanh dưới dùng duy nhất bộ phát này.
-  useEffect(() => {
-    const audio = audioElRef.current;
-    setCurrentTime(0);
-    setDuration(0);
-    onPlayingChange(false);
-    if (!(audio && audioBlobUrl)) {
-      return;
-    }
-    audio.pause();
-    audio.currentTime = 0;
-    void toggleAudioPlayback(audio);
-    return () => audio.pause();
-  }, [audioBlobUrl, audioElRef, onPlayingChange]);
-
-  // Vòng vẽ sóng âm trên canvas
-  useEffect(() => {
-    let animId = 0;
-    const canvas = canvasRef.current;
-    if (!canvas) {
-      return;
-    }
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      return;
-    }
-
-    const render = () => {
-      const data = getVisualizerData ? getVisualizerData() : null;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      const isLive = isPlaying;
-      const numBars = 44;
-      const barWidth = canvas.width / numBars - 2;
-      const grad = ctx.createLinearGradient(0, 0, canvas.width, 0);
-      // Teal -> cyan, đọc rõ trên cả nền sáng lẫn tối.
-      grad.addColorStop(0, "#14b8a6");
-      grad.addColorStop(1, "#06b6d4");
-      ctx.fillStyle = grad;
-      // Lúc chờ vẽ sóng tĩnh nhạt thay cho vạch xám, để thanh phát không trông như bị tắt.
-      ctx.globalAlpha = isLive ? 1 : 0.35;
-
-      for (let i = 0; i < numBars; i++) {
-        const val = waveBarHeight(i, numBars, isLive, data, canvas.height);
-
-        const x = i * (barWidth + 2);
-        const y = (canvas.height - val) / 2;
-        ctx.beginPath();
-        ctx.roundRect(x, y, barWidth, val, 2);
-        ctx.fill();
-      }
-
-      if (isLive) {
-        animId = requestAnimationFrame(render);
-      }
-    };
-
-    render();
-    return () => cancelAnimationFrame(animId);
-  }, [isPlaying, getVisualizerData]);
+  const {
+    currentTime,
+    duration,
+    handleTimeUpdate,
+    handleLoadedMetadata,
+    togglePlayPause,
+    handleSeek,
+  } = useAudioElementSync({
+    audioRef: audioElRef,
+    audioBlobUrl,
+    volume,
+    onPlayingChange,
+  });
 
   const isGenerating = status === "generating";
   const isBusy = isGenerating;
-  const progressPercent = Math.min(
-    95,
-    Math.max(0, Math.round(progress?.percent ?? 0))
-  );
-
-  const formatTime = (secs: number) => {
-    const m = Math.floor(secs / 60);
-    const s = Math.floor(secs % 60);
-    return `${m}:${s < 10 ? "0" : ""}${s}`;
-  };
+  const progressPercent = progress?.percent ?? 0;
 
   return (
     <div className="studio-audio-player">
@@ -265,17 +120,18 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
         aria-label={isPlaying ? "Tạm dừng" : "Phát lại"}
         className="studio-play-button"
         data-playing={isPlaying || undefined}
-        disabled={!audioBlobUrl}
+        disabled={!audioBlobUrl || isGenerating}
         onClick={togglePlayPause}
         type="button"
       >
         {isPlaying ? (
           <Pause size={18} />
         ) : (
-          <Play className="fill-current" size={18} />
+          <Play size={18} style={{ marginLeft: 2 }} />
         )}
       </button>
-      {/* Nút dừng tạo và thông tin bản đọc. */}
+
+      {/* Nút tạo/dừng tạo và thông tin bản đọc */}
       <div className="flex w-full items-center gap-3 md:w-auto">
         {(onGenerateOrPlay || isBusy) && (
           <Button
@@ -343,28 +199,24 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
           </label>
         )}
 
-        {/* Trạng thái và thông số của bản đang phát. */}
         <div className="studio-audio-status flex flex-col">
           <div className="flex items-center gap-2">
             <span
               className={`h-2.5 w-2.5 rounded-full ${
                 isGenerating
                   ? "animate-pulse bg-amber-500"
-                  : isPlaying
-                    ? "animate-pulse bg-brand-500"
-                    : audioBlobUrl
-                      ? "bg-brand-500"
-                      : "bg-[var(--canvas-muted)]"
+                  : isPlaying || audioBlobUrl
+                    ? `${isPlaying ? "animate-pulse" : ""}bg-brand-500`
+                    : "bg-[var(--canvas-muted)]"
               }`}
             />
             <span className="font-semibold text-[var(--canvas-foreground)] text-xs capitalize sm:text-sm">
-              {isGenerating
-                ? "Đang tạo giọng nói..."
-                : isPlaying
-                  ? `Đang phát (${selectedVoiceName})`
-                  : audioBlobUrl
-                    ? `Đã tạo xong (${selectedVoiceName})`
-                    : `Sẵn sàng (${selectedVoiceName})`}
+              {playbackStatusLabel(
+                isGenerating,
+                isPlaying,
+                Boolean(audioBlobUrl),
+                selectedVoiceName
+              )}
             </span>
           </div>
 
@@ -378,12 +230,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
           {!isGenerating && ttfaMs !== null && (
             <div className="mt-0.5 flex items-center gap-1 font-mono font-semibold text-[var(--canvas-accent)] text-xs">
               <Zap className="h-3 w-3 fill-brand-500" />
-              <span>
-                Tạo xong:{" "}
-                {ttfaMs >= 1000
-                  ? `${(ttfaMs / 1000).toFixed(1)}s`
-                  : `${ttfaMs}ms`}
-              </span>
+              <span>Tạo xong: {formatTtfa(ttfaMs)}</span>
             </div>
           )}
         </div>
@@ -422,23 +269,22 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
                   : "Đang tổng hợp âm thanh..."}
               </span>
               <span className="font-mono tabular-nums">
-                Đã chạy {formatTime((progress?.elapsedMs ?? 0) / 1000)}
+                Đã chạy {formatPlayerClock((progress?.elapsedMs ?? 0) / 1000)}
               </span>
             </div>
           </div>
         )}
-        <canvas
-          className={`${isGenerating ? "hidden" : ""} studio-wave h-[26px] w-full max-w-full rounded-lg px-1`}
-          height={26}
-          ref={canvasRef}
-          width={240}
+        <AudioWaveformCanvas
+          getVisualizerData={getVisualizerData}
+          hidden={isGenerating}
+          isPlaying={isPlaying}
         />
 
-        {/* Thanh tua khi đã có âm thanh */}
         {!isGenerating && audioBlobUrl && duration > 0 && (
           <div className="flex w-full max-w-full items-center gap-2 font-mono text-[12px] text-[var(--canvas-muted)]">
-            <span>{formatTime(currentTime)}</span>
+            <span>{formatPlayerClock(currentTime)}</span>
             <input
+              aria-label="Tua tiến độ phát âm thanh"
               className="h-1 flex-1 cursor-pointer appearance-none rounded-lg bg-[var(--canvas-border)] accent-[var(--canvas-accent)]"
               max={duration}
               min={0}
@@ -447,73 +293,23 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
               type="range"
               value={currentTime}
             />
-            <span>{formatTime(duration)}</span>
+            <span>{formatPlayerClock(duration)}</span>
           </div>
         )}
       </div>
 
-      {/* Điều khiển phát, xuất file và âm lượng */}
+      {/* Điều khiển xuất file và âm lượng */}
       <div className="flex w-full items-center justify-end gap-2 md:w-auto">
-        <details className="studio-export" ref={exportRef}>
-          <summary>Xuất file ▾</summary>
-          <div className="studio-export-menu">
-            {" "}
-            {/* Tải WAV */}
-            <button
-              className={`flex items-center gap-1 rounded-xl border px-3 py-2 font-semibold text-xs transition-all ${
-                downloadable
-                  ? "bg-[var(--canvas-border)] text-[var(--canvas-foreground)] shadow-sm hover:border-brand-500/50 hover:bg-brand-500/10 active:scale-95"
-                  : "cursor-not-allowed border-transparent bg-[var(--canvas-border)] text-[var(--canvas-muted)] opacity-40"
-              }`}
-              disabled={!downloadable}
-              onClick={onDownload}
-              title={
-                downloadable ? "Tải xuống file WAV" : "Chưa có audio để tải"
-              }
-              type="button"
-            >
-              <Download className="h-3.5 w-3.5 text-brand-500" />
-              <span>WAV</span>
-            </button>
-            {/* Tải MP3 */}
-            {onDownloadMp3 && (
-              <button
-                className={`flex items-center gap-1 rounded-xl border px-3 py-2 font-semibold text-xs transition-all ${
-                  downloadable
-                    ? "bg-[var(--canvas-border)] text-[var(--canvas-foreground)] shadow-sm hover:border-cyan-500/50 hover:bg-cyan-500/10 active:scale-95"
-                    : "cursor-not-allowed border-transparent bg-[var(--canvas-border)] text-[var(--canvas-muted)] opacity-40"
-                }`}
-                disabled={!downloadable}
-                onClick={onDownloadMp3}
-                title={
-                  downloadable
-                    ? "Tải xuống file MP3 nén"
-                    : "Chưa có audio để tải"
-                }
-                type="button"
-              >
-                <Download className="h-3.5 w-3.5 text-cyan-500" />
-                <span>MP3</span>
-              </button>
-            )}
-            {/* Tải SRT */}
-            {onDownloadSrt && (
-              <button
-                className="flex items-center gap-1 rounded-xl border bg-[var(--canvas-border)] px-3 py-2 font-semibold text-[var(--canvas-foreground)] text-xs shadow-sm transition-all hover:border-violet-500/50 hover:bg-violet-500/10 active:scale-95"
-                onClick={onDownloadSrt}
-                title="Tải phụ đề .srt (cùng tên với file audio)"
-                type="button"
-              >
-                <Captions className="h-3.5 w-3.5 text-violet-500" />
-                <span>SRT</span>
-              </button>
-            )}
-          </div>
-        </details>
+        <ExportMenu
+          downloadable={downloadable}
+          onDownload={onDownload}
+          onDownloadMp3={onDownloadMp3}
+          onDownloadSrt={onDownloadSrt}
+        />
 
-        {/* Thanh âm lượng */}
         <div className="flex items-center gap-1.5 border-border/60 border-l pl-2">
           <button
+            aria-label={volume === 0 ? "Bật âm thanh" : "Tắt âm thanh"}
             className="rounded-lg p-1.5 text-[var(--canvas-muted)] transition-colors hover:text-[var(--canvas-foreground)]"
             onClick={() => onChangeVolume(volume === 0 ? 1 : 0)}
             title="Bật/Tắt âm thanh"
@@ -526,6 +322,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
             )}
           </button>
           <input
+            aria-label="Âm lượng phát"
             className="h-1.5 w-14 cursor-pointer appearance-none rounded-lg bg-[var(--canvas-border)] accent-[var(--canvas-accent)]"
             max="1"
             min="0"
