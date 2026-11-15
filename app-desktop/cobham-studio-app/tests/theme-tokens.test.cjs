@@ -329,11 +329,11 @@ test("không còn gradient teal cũ", () => {
 });
 
 test("số liệu dùng font mono", () => {
-  const voice = fs.readFileSync(
-    path.join(SRC, "features/tts/components/VoiceSelector.tsx"),
+  const speed = fs.readFileSync(
+    path.join(SRC, "features/tts/components/SpeedControl.tsx"),
     "utf8"
   );
-  assert.match(voice, /font-mono/);
+  assert.match(speed, /font-mono/);
 });
 
 test("trình phát bên trong .studio-player không vẽ thẻ sáng đè nền tối", () => {
