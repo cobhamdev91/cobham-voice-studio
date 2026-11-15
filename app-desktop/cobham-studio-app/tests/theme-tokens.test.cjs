@@ -206,3 +206,14 @@ test("nút chính dính đáy panel", () => {
     "nút Tạo giọng đọc phải dính đáy panel"
   );
 });
+
+test("sidebar có nền riêng khác header", () => {
+  assert.notEqual(value(":root", "--sidebar"), value(":root", "--card"));
+  assert.match(block(".studio-sidebar"), /background:\s*var\(--sidebar\)/);
+});
+
+test("logo bo góc 6px, dùng indigo", () => {
+  const logo = block(".studio-logo");
+  assert.match(logo, /border-radius:\s*6px/);
+  assert.doesNotMatch(logo, /#0f766e|#0e7490/);
+});
