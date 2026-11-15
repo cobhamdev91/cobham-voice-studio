@@ -21,12 +21,12 @@ APP_DATA_DIR = "CobhamStudio"    # tên thư mục dữ liệu runtime
 # ── Kho phát hành ──────────────────────────────────────────────────────────
 # Dùng cho kiểm tra bản cập nhật. Đổi thành "<user>/<repo>" của bạn.
 # Để trống thì tự động tắt tính năng kiểm tra cập nhật.
-RELEASES_REPO = ""               # ví dụ: "yourname/cobham-studio"
+RELEASES_REPO = "cobhamdev91/cobham-voice-studio"
 RELEASES_URL = f"https://github.com/{RELEASES_REPO}" if RELEASES_REPO else ""
 
 # ── Thông tin hiển thị trong hộp thoại "Giới thiệu" ────────────────────────
 AUTHOR_NAME = "Cobham Studio"
-AUTHOR_URL = ""
+AUTHOR_URL = "https://github.com/cobhamdev91"
 COPYRIGHT_YEAR = "2026"
 
 

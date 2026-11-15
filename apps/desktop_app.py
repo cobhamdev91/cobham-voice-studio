@@ -4,6 +4,7 @@ Cobham Studio - Desktop App Launcher (PyWebView + FastAPI + VieNeu-TTS)
 Tự động khởi chạy Backend AI ngầm và mở cửa sổ ứng dụng Desktop Native.
 Không cần cài đặt Node.js hay Rust khi chạy hoặc đóng gói.
 """
+import base64
 import io
 import json
 import os

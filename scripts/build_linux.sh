@@ -145,7 +145,7 @@ sed -e "s/@VERSION@/${VERSION}/" -e "s/@DATE@/$(date +%Y-%m-%d)/" \
     echo "Recommends: xdg-utils"
     echo "Section: sound"
     echo "Priority: optional"
-    echo "Homepage: https://github.com/Cuongyd196/cobham-studio"
+    echo "Homepage: https://github.com/cobhamdev91/cobham-voice-studio"
     echo "Description: Vietnamese text-to-speech and voice cloning (VieNeu-TTS)"
     echo " Cobham Studio turns Vietnamese text into natural speech and clones a"
     echo " voice from a short sample. Runs offline on the CPU, models included;"

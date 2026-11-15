@@ -24,8 +24,8 @@
   </description>
   <launchable type="desktop-id">cobham-studio.desktop</launchable>
   <icon type="stock">cobham-studio</icon>
-  <url type="homepage">https://github.com/Cuongyd196/cobham-studio</url>
-  <url type="bugtracker">https://github.com/Cuongyd196/cobham-studio/issues</url>
+  <url type="homepage">https://github.com/cobhamdev91/cobham-voice-studio</url>
+  <url type="bugtracker">https://github.com/cobhamdev91/cobham-voice-studio/issues</url>
   <developer id="net.cuongit">
     <name>Cuong IT</name>
   </developer>

@@ -13,7 +13,7 @@
 ; `vieneu`, bam theo engine VieNeu-TTS cua tac gia goc (dang 3.3.0).
 #define AppVersion     "1.0.6"
 #define AppPublisher   "Cuong IT"
-#define AppURL         "https://github.com/Cuongyd196/cobham-studio"
+#define AppURL         "https://github.com/cobhamdev91/cobham-voice-studio"
 #define AppExeName     "Cobham-Studio.exe"
 #define AppDir         "dist\Cobham-Studio"
 

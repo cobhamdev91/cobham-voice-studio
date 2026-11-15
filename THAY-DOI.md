@@ -4,7 +4,7 @@ Theo yêu cầu của Apache-2.0 mục 4(b), tài liệu này nêu rõ các thay
 hiện so với bản gốc.
 
 - **Bản gốc:** CIT Voice Studio — Copyright 2026 Cuong IT — Apache-2.0
-- **Bản phái sinh:** Cobham Studio
+- **Bản phái sinh:** Cobham Studio — https://github.com/cobhamdev91/cobham-voice-studio
 - **Nền tảng:** VieNeu-TTS — Copyright 2024-2026 Phạm Nguyễn Ngọc Bảo — Apache-2.0
 
 ## 1. Đổi thương hiệu

@@ -288,7 +288,7 @@ For a Linux machine that runs all day as a speech server for other machines. It 
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh     # install uv, then reopen the terminal
-git clone <URL-REPO-CUA-BAN> && cd cobham-studio
+git clone https://github.com/cobhamdev91/cobham-voice-studio.git && cd cobham-voice-studio
 uv sync                                             # CPU
 # uv sync --group gpu-app                           # or: NVIDIA card (driver ≥ 570, ~3.5 GB extra)
 cd app-desktop/cobham-studio-app && npm ci && npm run build && cd ../..   # web UI (skip if you only need the API)
@@ -356,7 +356,7 @@ To expose it to the Internet, put the server behind an HTTPS tunnel (Cloudflare 
 Replaces steps 1, 2 and 5 above. Requires Docker Engine on Linux with the compose plugin. The container uses the host network (`network_mode: host`) so the app can tell requests from the server itself apart from requests from other machines; it therefore does not work correctly on Docker Desktop for Windows/macOS.
 
 ```bash
-git clone <URL-REPO-CUA-BAN> && cd cobham-studio
+git clone https://github.com/cobhamdev91/cobham-voice-studio.git && cd cobham-voice-studio
 C="docker compose -f packaging/docker/compose.yaml"
 $C up -d --build            # first build takes a few minutes
 $C logs -f                  # wait for "Sẵn sàng" (ready)

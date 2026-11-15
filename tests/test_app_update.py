@@ -18,7 +18,7 @@ def client(tmp_path, monkeypatch):
 
     def fake_fetch():
         calls.append(1)
-        return {"version": "9.0.0", "url": "https://github.com/Cuongyd196/cobham-studio/releases/tag/9.0.0",
+        return {"version": "9.0.0", "url": "https://github.com/cobhamdev91/cobham-voice-studio/releases/tag/9.0.0",
                 "published_at": "2026-10-01T00:00:00Z"}
 
     monkeypatch.setattr(au, "fetch_latest", fake_fetch)

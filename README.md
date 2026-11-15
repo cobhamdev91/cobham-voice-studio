@@ -298,7 +298,7 @@ Dùng khi muốn một máy Linux chạy suốt ngày làm máy chủ giọng n�
 
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh     # cài uv, mở lại terminal
-git clone <URL-REPO-CUA-BAN> && cd cobham-studio
+git clone https://github.com/cobhamdev91/cobham-voice-studio.git && cd cobham-voice-studio
 uv sync                                             # chạy bằng CPU
 # uv sync --group gpu-app                           # hoặc: có card NVIDIA (driver ≥ 570, tải thêm ~3,5 GB)
 cd app-desktop/cobham-studio-app && npm ci && npm run build && cd ../..   # giao diện (bỏ qua nếu chỉ dùng API)
@@ -366,7 +366,7 @@ Muốn đưa ra Internet, đặt máy chủ sau đường hầm HTTPS (Cloudflar
 Thay cho các bước 1, 2 và 5 ở trên. Cần Docker Engine trên Linux, kèm plugin compose. Container dùng mạng của máy chủ (`network_mode: host`) để phân biệt request từ chính máy chủ với request từ máy khác, nên không chạy đúng trên Docker Desktop của Windows/macOS.
 
 ```bash
-git clone <URL-REPO-CUA-BAN> && cd cobham-studio
+git clone https://github.com/cobhamdev91/cobham-voice-studio.git && cd cobham-voice-studio
 C="docker compose -f packaging/docker/compose.yaml"
 $C up -d --build            # build lần đầu vài phút
 $C logs -f                  # chờ dòng "Sẵn sàng"

@@ -12,11 +12,11 @@ export const APP_SLUG = "cobham-studio";
 export const APP_ID = "cobham_studio";
 
 /** kho phát hành dùng cho kiểm tra bản cập nhật (để trống = tắt) */
-export const RELEASES_REPO = "";
+export const RELEASES_REPO = "cobhamdev91/cobham-voice-studio";
 export const RELEASES_URL = RELEASES_REPO
   ? `https://github.com/${RELEASES_REPO}`
   : "";
 
 export const AUTHOR_NAME = "Cobham Studio";
-export const AUTHOR_URL = "";
+export const AUTHOR_URL = "https://github.com/cobhamdev91";
 export const COPYRIGHT_YEAR = "2026";
