@@ -436,3 +436,31 @@ test("vùng main panel (TextEditor, EmotionBar, AudioPlayerBar) không kẹp dar
     );
   }
 });
+
+test("Button hỗ trợ variant studio và các CTA chính tái sử dụng Button thay vì lặp gradient", () => {
+  const btnSrc = fs.readFileSync(
+    path.join(SRC, "components/ui/button.tsx"),
+    "utf8"
+  );
+  assert.match(btnSrc, /\bstudio:\s*["']studio-primary/);
+  for (const rel of [
+    "features/tts/TtsStudio.tsx",
+    "features/tts/components/AudioPlayerBar.tsx",
+    "features/tts/components/BatchTab.tsx",
+    "features/tts/components/LoadingScreen.tsx",
+    "features/tts/components/SrtDubbing.tsx",
+    "features/tts/components/VoiceCloningTab.tsx",
+  ]) {
+    const src = fs.readFileSync(path.join(SRC, rel), "utf8");
+    assert.doesNotMatch(
+      src,
+      /from-brand-500 to-brand-700/,
+      `${rel} vẫn lặp lại gradient nút chính thay vì dùng Button variant="studio"`
+    );
+    assert.match(
+      src,
+      /<Button[\s\S]*?\bvariant=/,
+      `${rel} chưa dùng <Button variant=...>`
+    );
+  }
+});

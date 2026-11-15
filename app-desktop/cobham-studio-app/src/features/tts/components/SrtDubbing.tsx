@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { type DubStats, dubSrtToHistory, type SrtCue } from "../api";
 import { downloadBlobAsFile } from "../audio-engine";
 import { downloadHistoryAudio, fromServer, srtBlob } from "../history";
@@ -241,15 +242,17 @@ export const SrtDubbing: React.FC<SrtDubbingProps> = ({
               <Square className="h-3.5 w-3.5" />
             </button>
           ) : (
-            <button
-              className="studio-primary flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-700 px-4 py-2.5 font-semibold text-white text-xs shadow-brand-500/20 shadow-md transition-all hover:from-brand-600 hover:to-brand-800 active:scale-95 disabled:opacity-50"
+            <Button
+              className="w-full text-xs"
               disabled={!voiceId}
               onClick={handleDub}
+              size="studio"
               type="button"
+              variant="studio"
             >
               <Mic className="h-4 w-4" />
               <span>Lồng tiếng</span>
-            </button>
+            </Button>
           )}
 
           {error && (

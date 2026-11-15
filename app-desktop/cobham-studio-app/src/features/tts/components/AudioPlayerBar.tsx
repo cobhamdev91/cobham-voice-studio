@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { toggleAudioPlayback } from "../playback";
 import type { PlaybackStatus } from "../types";
 
@@ -272,15 +273,14 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
       {/* Nút dừng tạo và thông tin bản đọc. */}
       <div className="flex w-full items-center gap-3 md:w-auto">
         {(onGenerateOrPlay || isBusy) && (
-          <button
-            className={`flex flex-1 select-none items-center justify-center gap-2 rounded-lg px-4 py-2 font-bold text-xs shadow-xs transition-all active:scale-95 sm:text-sm md:flex-none ${
-              isBusy
-                ? "animate-pulse bg-rose-500 text-white shadow-rose-500/20 hover:bg-rose-600"
-                : "bg-gradient-to-r from-brand-500 to-brand-700 text-white shadow-brand-500/25 hover:from-brand-600 hover:to-brand-800"
-            } ${disabled && !isBusy ? "cursor-not-allowed opacity-50" : ""}`}
+          <Button
+            className={`flex-1 select-none font-bold text-xs sm:text-sm md:flex-none ${
+              isBusy ? "animate-pulse" : ""
+            }`}
             disabled={disabled && !isBusy}
             onClick={isBusy ? onStop : onGenerateOrPlay}
             type="button"
+            variant={isBusy ? "destructive" : "studio"}
           >
             {isBusy ? (
               <>
@@ -293,7 +293,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
                 <span>Tạo giọng nói</span>
               </>
             )}
-          </button>
+          </Button>
         )}
 
         {onToggleSubtitles && (
