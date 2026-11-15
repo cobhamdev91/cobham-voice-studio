@@ -1,16 +1,4 @@
-import {
-  AlertCircle,
-  BookOpen,
-  FileText,
-  History,
-  Info,
-  ListOrdered,
-  Mic,
-  Settings,
-  Sparkles,
-  Users,
-  X,
-} from "lucide-react";
+import { AlertCircle, Sparkles, X } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -40,11 +28,7 @@ import {
   AdvancedGeneration,
   DEFAULT_TEMPERATURE,
 } from "./components/AdvancedGeneration";
-import {
-  SidebarFooter,
-  UpdateBanner,
-  UpdateDialog,
-} from "./components/AppUpdate";
+import { UpdateBanner, UpdateDialog } from "./components/AppUpdate";
 import { AudioPlayerBar } from "./components/AudioPlayerBar";
 import { BatchTab } from "./components/BatchTab";
 import { ConversationTab } from "./components/ConversationTab";
@@ -57,6 +41,7 @@ import { PdfReaderTab } from "./components/PdfReaderTab";
 import { PronunciationDictionaryModal } from "./components/PronunciationDictionary";
 import { SavedFileToast } from "./components/SavedFileToast";
 import { SettingsModal } from "./components/SettingsModal";
+import { SidebarNav } from "./components/SidebarNav";
 import { TermsGate } from "./components/TermsGate";
 import { TextEditor } from "./components/TextEditor";
 import { VoiceCloningTab } from "./components/VoiceCloningTab";
@@ -784,83 +769,19 @@ export const TtsStudio: React.FC = () => {
         )}
 
         <div className="studio-body">
-          <nav aria-label="Chức năng" className="studio-sidebar">
-            <div className="studio-nav-groups">
-              {[
-                {
-                  title: "Tạo",
-                  items: [
-                    { tab: "tts", label: "Đọc văn bản", icon: Mic },
-                    { tab: "conversation", label: "Hội thoại", icon: Users },
-                    {
-                      tab: "pdf",
-                      label: "Đọc file, lồng tiếng",
-                      icon: FileText,
-                    },
-                    { tab: "batch", label: "Tạo hàng loạt", icon: ListOrdered },
-                    { tab: "clone", label: "Nhân bản giọng", icon: Sparkles },
-                  ],
-                },
-                {
-                  title: "Thư viện",
-                  items: [
-                    {
-                      tab: "dictionary",
-                      label: "Từ điển phát âm",
-                      icon: BookOpen,
-                    },
-                    { tab: "history", label: "Bản đã tạo", icon: History },
-                  ],
-                },
-                {
-                  title: "Hệ thống",
-                  items: [
-                    { tab: "settings", label: "Cài đặt", icon: Settings },
-                    {
-                      tab: "about",
-                      label: "Thông tin và bản quyền",
-                      icon: Info,
-                    },
-                  ],
-                },
-              ].map((group) => (
-                <div className="studio-nav-group" key={group.title}>
-                  <h2>{group.title}</h2>
-                  {group.items.map((item) => (
-                    <button
-                      aria-current={activeTab === item.tab ? "page" : undefined}
-                      className="studio-nav-item"
-                      key={item.tab}
-                      onClick={() => {
-                        if (item.tab === "dictionary") {
-                          setIsDictionaryOpen(true);
-                        } else if (item.tab === "settings") {
-                          setSettingsSection(undefined);
-                          setIsSettingsOpen(true);
-                        } else {
-                          setActiveTab(item.tab as ActiveTab);
-                        }
-                      }}
-                      type="button"
-                    >
-                      <item.icon aria-hidden="true" size={16} />
-                      <span>{item.label}</span>
-                      {item.tab === "history" && (
-                        <span className="studio-nav-count">
-                          {history.length}
-                        </span>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              ))}
-            </div>
-            <SidebarFooter
-              apiUrl={settings.apiUrl}
-              info={appUpdate}
-              onChecked={handleUpdateChecked}
-            />
-          </nav>
+          <SidebarNav
+            activeTab={activeTab}
+            apiUrl={settings.apiUrl}
+            appUpdate={appUpdate}
+            historyCount={history.length}
+            onOpenDictionary={() => setIsDictionaryOpen(true)}
+            onOpenSettings={() => {
+              setSettingsSection(undefined);
+              setIsSettingsOpen(true);
+            }}
+            onSelectTab={setActiveTab}
+            onUpdateChecked={handleUpdateChecked}
+          />
           <div
             className={`studio-workspace ${activeTab === "tts" ? "studio-workspace-tts" : ""}`}
           >
