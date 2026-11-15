@@ -76,3 +76,20 @@ test("thang brand là indigo, không còn teal", () => {
     "còn màu teal trong thang brand"
   );
 });
+
+const HTML_PATH = path.join(__dirname, "../index.html");
+const html = fs.readFileSync(HTML_PATH, "utf8");
+
+test("bootstrap nền canvas, không dùng nền sáng", () => {
+  assert.match(
+    html,
+    /background:\s*#14161d/,
+    "bootstrap phải nền canvas #14161d"
+  );
+  assert.match(html, /<title>Cobham Studio<\/title>/);
+  assert.doesNotMatch(
+    html,
+    /#f3f8f8|#e1f6f1/,
+    "còn nền sáng cũ của bản gốc"
+  );
+});
