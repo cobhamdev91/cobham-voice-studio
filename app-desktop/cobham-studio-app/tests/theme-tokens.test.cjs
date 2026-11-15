@@ -238,3 +238,56 @@ test("EmotionBar không dùng cặp màu dark: cho chip", () => {
   assert.doesNotMatch(src, /text-(sky|emerald|amber|purple|slate)-\d{3}\s+dark:/);
   assert.match(src, /--emotion-/);
 });
+
+const SRC = path.join(__dirname, "../src");
+
+test("không còn màu bề mặt hardcode ngoài khối code tối có chủ đích", () => {
+  const allowed = ["bg-zinc-950", "text-zinc-200"];
+  const files = [];
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (/\.(tsx|ts)$/.test(entry.name)) files.push(full);
+    }
+  };
+  walk(SRC);
+  const offenders = [];
+  for (const file of files) {
+    const src = fs.readFileSync(file, "utf8");
+    const hits = src.match(/\b(?:bg|text|border)-(?:white|black|slate|gray|zinc|neutral|stone)-\d{0,3}\b/g) ?? [];
+    const real = hits.filter((h) => !allowed.includes(h));
+    if (real.length > 0) {
+      offenders.push(`${path.relative(SRC, file)}: ${[...new Set(real)].join(", ")}`);
+    }
+  }
+  assert.deepEqual(offenders, [], `còn màu bề mặt hardcode:\n${offenders.join("\n")}`);
+});
+
+test("không còn gradient teal cũ", () => {
+  const files = [];
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (/\.(tsx|ts)$/.test(entry.name)) files.push(full);
+    }
+  };
+  walk(SRC);
+  const offenders = [];
+  for (const file of files) {
+    const src = fs.readFileSync(file, "utf8");
+    if (/\bteal-\d{3}\b/.test(src)) {
+      offenders.push(path.relative(SRC, file));
+    }
+  }
+  assert.deepEqual(offenders, [], `còn màu teal cũ:\n${offenders.join("\n")}`);
+});
+
+test("số liệu dùng font mono", () => {
+  const voice = fs.readFileSync(
+    path.join(SRC, "features/tts/components/VoiceSelector.tsx"),
+    "utf8"
+  );
+  assert.match(voice, /font-mono/);
+});

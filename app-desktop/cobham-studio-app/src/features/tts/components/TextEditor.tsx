@@ -150,7 +150,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
     <div className="studio-text-editor studio-canvas">
       <div className="studio-editor-heading">
         <h2>Đọc văn bản</h2>
-        <span className="studio-editor-stats">
+        <span className="studio-editor-stats font-mono tabular-nums">
           {charCount.toLocaleString("vi-VN")} ký tự · {wordCount} từ ·{" "}
           {sentenceCount} câu · ~{Math.ceil(wordCount / 2.5)} giây
         </span>

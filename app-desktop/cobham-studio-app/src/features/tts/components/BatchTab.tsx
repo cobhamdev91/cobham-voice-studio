@@ -565,7 +565,7 @@ export const BatchTab: React.FC<BatchTabProps> = ({
               </button>
             ) : (
               <button
-                className="studio-primary flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-teal-600 px-4 py-2.5 font-semibold text-sm text-white shadow-brand-500/20 shadow-md transition-all hover:from-brand-600 hover:to-teal-700 active:scale-95 disabled:opacity-50"
+                className="studio-primary flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-brand-700 px-4 py-2.5 font-semibold text-sm text-white shadow-brand-500/20 shadow-md transition-all hover:from-brand-600 hover:to-brand-800 active:scale-95 disabled:opacity-50"
                 disabled={items.length === 0 || !voiceId || pendingCount === 0}
                 onClick={handleGenerate}
                 type="button"

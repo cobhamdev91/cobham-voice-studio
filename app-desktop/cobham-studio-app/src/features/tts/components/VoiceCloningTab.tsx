@@ -408,11 +408,11 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
               {inputSource === "recording" &&
                 (isRecording ? (
                   <button
-                    className="flex animate-pulse items-center gap-1.5 rounded-lg bg-slate-800 px-3 py-1.5 font-semibold text-white text-xs"
+                    className="flex animate-pulse items-center gap-1.5 rounded-lg bg-muted px-3 py-1.5 font-semibold text-muted-foreground text-xs"
                     onClick={stopRecording}
                     type="button"
                   >
-                    <Square className="h-3.5 w-3.5 fill-white" />
+                    <Square className="h-3.5 w-3.5 fill-current" />
                     Dừng
                   </button>
                 ) : (
@@ -603,7 +603,7 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
           </strong>
         </div>
         <button
-          className="studio-primary flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-teal-600 px-6 py-2.5 font-bold text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="studio-primary flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-brand-700 px-6 py-2.5 font-bold text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
           disabled={!(savedVoice && targetText.trim()) || isGenerating}
           onClick={handleGenerate}
           type="button"

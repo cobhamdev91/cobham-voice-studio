@@ -501,11 +501,13 @@ export const VoiceSelector: React.FC<VoiceSelectorProps> = ({
             <Sliders className="h-3.5 w-3.5 text-brand-500" />
             <span>
               Tốc độ ·{" "}
-              {speed.toLocaleString("vi-VN", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-              ×
+              <span className="font-mono tabular-nums">
+                {speed.toLocaleString("vi-VN", {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+                ×
+              </span>
             </span>
           </div>
 

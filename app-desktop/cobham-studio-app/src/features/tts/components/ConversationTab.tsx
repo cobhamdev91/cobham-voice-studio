@@ -103,7 +103,7 @@ function nextSpeakerName(existing: string[]): string {
 const SPEAKER_COLORS = [
   "from-pink-500 to-rose-500",
   "from-cyan-500 to-blue-500",
-  "from-brand-500 to-teal-500",
+  "from-brand-500 to-brand-400",
   "from-amber-500 to-orange-500",
   "from-purple-500 to-violet-500",
   "from-indigo-500 to-sky-500",

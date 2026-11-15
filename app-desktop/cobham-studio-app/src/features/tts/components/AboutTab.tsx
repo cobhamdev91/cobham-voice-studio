@@ -45,7 +45,7 @@ export const AboutTab: React.FC<AboutTabProps> = ({
 
         <div className="relative flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-500 via-teal-500 to-cyan-500 text-white shadow-brand-500/25 shadow-md">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-500 via-brand-400 to-brand-300 text-white shadow-brand-500/25 shadow-md">
               <Volume2 className="h-7 w-7" />
             </div>
             <div>
