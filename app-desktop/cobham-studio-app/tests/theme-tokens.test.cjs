@@ -16,6 +16,21 @@ function block(selector) {
   return css.slice(start, end);
 }
 
+/** Lấy TẤT CẢ các block CSS của một selector (file có nhiều lần override cùng selector). */
+function allBlocks(selector) {
+  const out = [];
+  let from = 0;
+  for (;;) {
+    const start = css.indexOf(`${selector} {`, from);
+    if (start === -1) break;
+    const end = css.indexOf("\n}", start);
+    if (end === -1) break;
+    out.push(css.slice(start, end));
+    from = end + 1;
+  }
+  return out;
+}
+
 /** Đọc một biến trong block. */
 function value(selector, name) {
   const match = block(selector).match(new RegExp(`${name}:\\s*([^;]+);`));
@@ -161,4 +176,33 @@ test("player trong layout TTS không bị gỡ nền nữa", () => {
   const inTts = block(".studio-workspace-tts .studio-player");
   assert.doesNotMatch(inTts, /background:\s*transparent/);
   assert.doesNotMatch(inTts, /border:\s*0/);
+});
+
+test("panel điều khiển có ranh giới section và nút dính đáy", () => {
+  const props = block(".studio-properties");
+  assert.match(props, /border-left:\s*1px solid var\(--border\)/);
+  assert.match(props, /--studio-section-divider/);
+});
+
+test("nhãn section dùng font mono, chữ nhỏ, uppercase", () => {
+  const rules = allBlocks(".studio-voice-heading h2");
+  assert.ok(rules.length >= 1, "không tìm thấy rule .studio-voice-heading h2");
+  const all = rules.join("\n");
+  assert.match(all, /font-family:\s*var\(--font-mono\)/);
+  assert.match(all, /text-transform:\s*uppercase/);
+  assert.match(all, /letter-spacing:\s*0\.08em/);
+  // Rule override ở cuối file không được ghi đè màu về màu chrome.
+  assert.doesNotMatch(
+    all,
+    /color:\s*var\(--foreground\)/,
+    "rule override ghi đè màu nhãn section về màu chrome"
+  );
+});
+
+test("nút chính dính đáy panel", () => {
+  assert.match(
+    block(".studio-properties .studio-primary"),
+    /margin-top:\s*auto/,
+    "nút Tạo giọng đọc phải dính đáy panel"
+  );
 });

@@ -19,6 +19,8 @@
   --text-xs--line-height: 1.4;
   --font-sans: "Inter Variable", "Segoe UI", system-ui, sans-serif;
   --font-heading: "Be Vietnam Pro", "Inter Variable", "Segoe UI", sans-serif;
+  /* Font mono hệ thống: app chạy offline nên không thêm font mới cần tải về. */
+  --font-mono: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
   --color-brand-50: #eef2ff;
   --color-brand-100: #e0e7ff;
   --color-brand-200: #c7d2fe;
@@ -591,6 +593,7 @@
   padding: 16px;
   background: var(--card);
   border-left: 1px solid var(--border);
+  --studio-section-divider: 1px solid var(--border);
 }
 .studio-properties > * {
   flex-shrink: 0;
@@ -598,6 +601,9 @@
 .studio-properties > .min-h-0 {
   flex: 1;
   min-height: 80px;
+}
+.studio-properties .studio-primary {
+  margin-top: auto;
 }
 .studio-workspace-tts .studio-player {
   grid-area: player;
@@ -726,11 +732,12 @@
   justify-content: space-between;
 }
 .studio-voice-heading h2 {
-  font-size: 13px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 600;
   color: var(--muted-foreground);
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
 }
 .studio-voice-filter {
   display: flex;
@@ -795,7 +802,7 @@
   gap: 6px;
   padding-top: 12px;
   margin-top: 4px;
-  border-top: 1px solid var(--border);
+  border-top: var(--studio-section-divider);
 }
 .studio-speed > div:last-child {
   display: none;
@@ -810,7 +817,7 @@
 }
 .studio-generation-options {
   padding-top: 8px;
-  border-top: 1px solid var(--border);
+  border-top: var(--studio-section-divider);
 }
 .studio-switch-row {
   display: flex;
@@ -861,7 +868,7 @@
 }
 .studio-generate-area {
   padding-top: 12px;
-  border-top: 1px solid var(--border);
+  border-top: var(--studio-section-divider);
 }
 .studio-generate {
   display: flex;
@@ -1495,8 +1502,8 @@
 
 /* Danh sách giọng: avatar có màu riêng, vùng miền có màu, giọng chọn có vạch trái. */
 .studio-voice-heading h2 {
-  font-weight: 700;
-  color: var(--foreground);
+  font-weight: 600;
+  color: var(--muted-foreground);
 }
 .studio-voice-selected {
   background: var(--color-brand-50);
