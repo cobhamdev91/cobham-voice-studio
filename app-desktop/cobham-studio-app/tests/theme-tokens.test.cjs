@@ -342,3 +342,63 @@ test("trình phát bên trong .studio-player không vẽ thẻ sáng đè nền 
   assert.match(block(".studio-export summary"), /var\(--canvas\)/);
   assert.match(block(".studio-export-menu"), /var\(--canvas-toolbar\)/);
 });
+
+test("global.css và settings.css không còn màu teal/emerald cũ", () => {
+  const settingsCss = fs.readFileSync(
+    path.join(__dirname, "../src/app/settings.css"),
+    "utf8"
+  );
+  for (const [name, content] of [
+    ["global.css", css],
+    ["settings.css", settingsCss],
+  ]) {
+    assert.doesNotMatch(
+      content,
+      /#0e7490|#0f766e|#ccfbf1|#115e59|13\s+148\s+136|45\s+212\s+191|20\s+184\s+166/,
+      `${name} vẫn còn màu teal cũ`
+    );
+  }
+});
+
+/** Đếm các block top-level (ngoài `@media`) của một selector. */
+function topLevelBlocks(selector) {
+  const out = [];
+  const needle = `\n${selector} {`;
+  let from = 0;
+  for (;;) {
+    const start = css.indexOf(needle, from);
+    if (start === -1) {
+      break;
+    }
+    const end = css.indexOf("\n}", start + 1);
+    if (end === -1) {
+      break;
+    }
+    out.push(css.slice(start + 1, end));
+    from = end + 1;
+  }
+  return out;
+}
+
+test("các selector trọng tâm trong global.css tuân thủ SSOT (chỉ 1 block ngoài @media)", () => {
+  for (const sel of [
+    ".studio-voice-heading h2",
+    ".studio-logo",
+    ".studio-sidebar",
+    ".studio-properties",
+    ".studio-primary[class]",
+  ]) {
+    assert.equal(
+      topLevelBlocks(sel).length,
+      1,
+      `${sel} bị khai báo trùng ${topLevelBlocks(sel).length} lần ngoài @media trong global.css`
+    );
+  }
+});
+
+test(".font-mono không bị ghi đè về --font-sans", () => {
+  assert.doesNotMatch(
+    css,
+    /\.font-mono[\s\S]{0,60}font-family:\s*var\(--font-sans\)/
+  );
+});

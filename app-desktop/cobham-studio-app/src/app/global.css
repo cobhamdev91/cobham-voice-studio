@@ -317,6 +317,7 @@
     var(--color-brand-800)
   );
   border-radius: 6px;
+  box-shadow: 0 4px 12px -4px rgb(79 70 229 / 45%);
 }
 .studio-model {
   display: flex;
@@ -364,8 +365,9 @@
   width: 248px;
   padding: 8px 12px;
   overflow: hidden;
+  color: var(--sidebar-foreground);
   background: var(--sidebar);
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--sidebar-border);
 }
 .studio-nav-groups {
   flex: 1;
@@ -553,27 +555,50 @@
   }
 }
 
-/* Số liệu thẳng hàng, dùng chung font Inter đã đóng gói để chạy ngoại tuyến. */
-.font-mono,
+/* Số liệu thẳng hàng theo bảng chữ số đều độ rộng. */
 .tabular-nums {
-  font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
+/* Nút chính: một định nghĩa duy nhất cho gradient indigo, bóng và trạng thái hover/disabled. */
 .studio-primary {
   font-weight: 600;
-  color: var(--primary-foreground);
-  background: linear-gradient(115deg, var(--color-brand-600), #0e7490);
   border-radius: 11px;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s,
+    filter 0.15s;
 }
-.dark .studio-primary {
+.studio-primary[class] {
   color: var(--primary-foreground);
-  background: var(--primary);
+  background: linear-gradient(
+    115deg,
+    var(--color-brand-500),
+    var(--color-brand-700)
+  );
+  box-shadow: 0 8px 20px -10px rgb(79 70 229 / 60%);
+}
+.dark .studio-primary[class] {
+  color: var(--primary-foreground);
+  background: linear-gradient(
+    115deg,
+    var(--color-brand-300),
+    var(--color-brand-400)
+  );
+  box-shadow: 0 8px 22px -10px rgb(129 140 248 / 50%);
 }
 .studio-primary:disabled {
   opacity: 0.5;
 }
+.dark .studio-primary[class]:disabled {
+  color: var(--muted-foreground);
+  background: var(--secondary);
+  box-shadow: none;
+  opacity: 1;
+}
 .studio-primary:not(:disabled):hover {
-  filter: brightness(0.92);
+  box-shadow: 0 12px 24px -10px rgb(79 70 229 / 68%);
+  filter: brightness(1.05);
+  transform: translateY(-1px);
 }
 
 /* TTS: các vùng dùng chung lưới để trình phát không bị tháo khỏi DOM khi đổi tab. */
@@ -1022,15 +1047,6 @@
 }
 
 /* Cùng một hệ thẻ và nút cho các tab, hộp thoại và màn hình khởi động. */
-.studio-primary[class] {
-  color: var(--primary-foreground);
-  background: linear-gradient(115deg, var(--color-brand-600), #0e7490);
-  box-shadow: var(--shadow-sm);
-}
-.dark .studio-primary[class] {
-  color: var(--primary-foreground);
-  background: var(--primary);
-}
 .studio-main > :where(div:not([hidden])) {
   min-width: 0;
 }
@@ -1369,15 +1385,8 @@
 .studio-header {
   box-shadow: var(--shadow-sm);
 }
-.studio-logo {
-  box-shadow: 0 4px 12px -4px rgb(79 70 229 / 45%);
-}
 
 /* Thanh bên */
-.studio-sidebar {
-  color: var(--sidebar-foreground);
-  border-right-color: var(--sidebar-border);
-}
 .studio-nav-group h2 {
   font-family: var(--font-sans);
   font-weight: 700;
@@ -1419,33 +1428,6 @@
   }
 }
 
-/* Nút chính: gradient teal, bóng màu, nhấc nhẹ khi rê chuột. */
-.studio-primary[class] {
-  background: linear-gradient(
-    115deg,
-    var(--color-brand-500),
-    var(--color-brand-700)
-  );
-  box-shadow: 0 8px 20px -10px rgb(13 148 136 / 70%);
-  transition:
-    transform 0.15s,
-    box-shadow 0.15s,
-    filter 0.15s;
-}
-.dark .studio-primary[class] {
-  color: var(--primary-foreground);
-  background: linear-gradient(
-    115deg,
-    var(--color-brand-300),
-    var(--color-brand-400)
-  );
-  box-shadow: 0 8px 22px -10px rgb(45 212 191 / 55%);
-}
-.studio-primary:not(:disabled):hover {
-  box-shadow: 0 12px 24px -10px rgb(13 148 136 / 75%);
-  filter: brightness(1.05);
-  transform: translateY(-1px);
-}
 /* Đang tạo: nền cam có sọc chạy, không mờ như nút bị khoá. */
 .studio-generate[data-busy][class] {
   color: #fff;
@@ -1479,7 +1461,7 @@
     var(--color-brand-400),
     var(--color-brand-700)
   );
-  box-shadow: 0 6px 16px -6px rgb(13 148 136 / 70%);
+  box-shadow: 0 6px 16px -6px rgb(79 70 229 / 60%);
   transition: transform 0.15s;
 }
 .dark .studio-play-button {
@@ -1501,10 +1483,10 @@
 }
 @keyframes studio-play-ring {
   from {
-    box-shadow: 0 0 0 0 rgb(20 184 166 / 45%);
+    box-shadow: 0 0 0 0 rgb(99 102 241 / 45%);
   }
   to {
-    box-shadow: 0 0 0 12px rgb(20 184 166 / 0%);
+    box-shadow: 0 0 0 12px rgb(99 102 241 / 0%);
   }
 }
 .studio-wave {
@@ -1512,10 +1494,6 @@
 }
 
 /* Danh sách giọng: avatar có màu riêng, vùng miền có màu, giọng chọn có vạch trái. */
-.studio-voice-heading h2 {
-  font-weight: 600;
-  color: var(--muted-foreground);
-}
 .studio-voice-selected {
   background: var(--color-brand-50);
   border-color: transparent;
@@ -1526,8 +1504,8 @@
   box-shadow: inset 3px 0 var(--color-brand-400);
 }
 .studio-voice-avatar {
-  --tone-bg: #ccfbf1;
-  --tone-fg: #115e59;
+  --tone-bg: #e0e7ff;
+  --tone-fg: #3730a3;
   font-weight: 700;
   color: var(--tone-fg);
   background: var(--tone-bg);
@@ -1563,8 +1541,8 @@
   --tone-fg: #4338ca;
 }
 .dark .studio-voice-avatar {
-  --tone-bg: #134e4a;
-  --tone-fg: #99f6e4;
+  --tone-bg: #1e1b4b;
+  --tone-fg: #c7d2fe;
 }
 .dark .studio-voice-avatar[data-tone="1"] {
   --tone-bg: #1e3a8a;
@@ -1593,13 +1571,6 @@
 .dark .studio-voice-avatar[data-tone="7"] {
   --tone-bg: #312e81;
   --tone-fg: #c7d2fe;
-}
-/* Nút chính bị khoá ở nền tối: xám trung tính thay vì teal mờ (trông đục, bẩn màu). */
-.dark .studio-primary[class]:disabled {
-  color: var(--muted-foreground);
-  background: var(--secondary);
-  box-shadow: none;
-  opacity: 1;
 }
 
 /* Danh sách giọng thoáng hơn: avatar nhạt, không viền, hàng cao hơn một chút. */
@@ -1738,7 +1709,7 @@
     var(--color-brand-700)
   );
   border-radius: 16px;
-  box-shadow: 0 10px 22px -10px rgb(13 148 136 / 70%);
+  box-shadow: 0 10px 22px -10px rgb(79 70 229 / 60%);
 }
 .doc-dropzone-title {
   font-size: 16px;
@@ -2076,9 +2047,13 @@
   width: 48px;
   height: 48px;
   color: #fff;
-  background: linear-gradient(135deg, var(--color-brand-600), #0e7490);
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-600),
+    var(--color-brand-800)
+  );
   border-radius: 12px;
-  box-shadow: 0 6px 16px -6px rgb(13 148 136 / 60%);
+  box-shadow: 0 6px 16px -6px rgb(79 70 229 / 55%);
 }
 .update-dialog-badge {
   padding: 2px 8px;
