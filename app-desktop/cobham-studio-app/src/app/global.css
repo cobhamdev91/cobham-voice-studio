@@ -119,13 +119,13 @@
   --shadow-md:
     0 1px 3px rgb(16 24 40 / 8%), 0 16px 36px -20px rgb(20 22 29 / 45%);
 
-  /* Màn hình làm việc: luôn tối ở cả chế độ sáng và tối. */
-  --canvas: #14161d;
-  --canvas-foreground: #e8eaf0;
-  --canvas-muted: #98a0b2;
-  --canvas-border: #262a36;
-  --canvas-toolbar: #1b1e27;
-  --canvas-accent: #818cf8;
+  /* Màn hình làm việc (panel main) ở chế độ sáng: nền sáng, chữ đậm. */
+  --canvas: #ffffff;
+  --canvas-foreground: #14161a;
+  --canvas-muted: #5b6270;
+  --canvas-border: #dde0e6;
+  --canvas-toolbar: #f4f5f7;
+  --canvas-accent: #4f46e5;
 
   /* Màu chip cảm xúc trên nền chrome sáng: chữ đậm. */
   --emotion-sky: #075985;
@@ -178,7 +178,7 @@
   --shadow-sm: none;
   --shadow-md: none;
 
-  /* Màn hình làm việc: luôn tối ở cả chế độ sáng và tối. */
+  /* Màn hình làm việc (panel main) ở chế độ tối. */
   --canvas: #14161d;
   --canvas-foreground: #e8eaf0;
   --canvas-muted: #98a0b2;
@@ -506,9 +506,7 @@
   background: var(--canvas-toolbar);
   border: 1px solid var(--canvas-border);
   border-radius: 10px;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 4%),
-    0 12px 28px -20px rgb(0 0 0 / 70%);
+  box-shadow: var(--shadow-sm);
 }
 @media (width < 1024px) {
   .studio-body {
@@ -637,17 +635,7 @@
   background: var(--canvas);
   border: 1px solid var(--canvas-border);
   border-radius: 10px;
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 4%),
-    0 18px 40px -22px rgb(0 0 0 / 70%);
-}
-/* Vùng canvas luôn tối: chip cảm xúc dùng bản chữ sáng. */
-.studio-canvas {
-  --emotion-sky: #7dd3fc;
-  --emotion-emerald: #6ee7b7;
-  --emotion-amber: #fcd34d;
-  --emotion-purple: #d8b4fe;
-  --emotion-slate: #cbd5e1;
+  box-shadow: var(--shadow-md);
 }
 .studio-editor-heading {
   display: flex;

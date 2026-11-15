@@ -42,7 +42,7 @@ function value(selector, name) {
   return match[1].trim();
 }
 
-test("canvas tokens có trong :root và .dark, giống nhau", () => {
+test("canvas tokens có trong :root (nền sáng) và .dark (nền tối)", () => {
   for (const name of [
     "--canvas",
     "--canvas-foreground",
@@ -51,31 +51,39 @@ test("canvas tokens có trong :root và .dark, giống nhau", () => {
     "--canvas-toolbar",
     "--canvas-accent",
   ]) {
-    assert.equal(
-      value(":root", name),
-      value(".dark", name),
-      `${name} lệch giữa :root và .dark`
-    );
+    assert.ok(value(":root", name), `:root thiếu ${name}`);
+    assert.ok(value(".dark", name), `.dark thiếu ${name}`);
   }
+  assert.equal(value(":root", "--canvas"), "#ffffff");
+  assert.equal(value(".dark", "--canvas"), "#14161d");
 });
 
-test("canvas là nền tối với chữ sáng, tương phản >= 10:1", () => {
-  const bg = value(":root", "--canvas");
-  const fg = value(":root", "--canvas-foreground");
-  assert.match(bg, /^#[0-9a-f]{6}$/i, "--canvas phải là hex 6 ký tự");
-  assert.match(
-    fg,
-    /^#[0-9a-f]{6}$/i,
-    "--canvas-foreground phải là hex 6 ký tự"
-  );
+test("canvas đủ tương phản >= 10:1 ở cả chế độ sáng và tối", () => {
   const lum = (hex) => {
     const [r, g, b] = [1, 3, 5]
       .map((i) => Number.parseInt(hex.slice(i, i + 2), 16) / 255)
       .map((c) => (c <= 0.039_28 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   };
-  const [l1, l2] = [lum(bg), lum(fg)].sort((a, b) => b - a);
-  assert.ok((l1 + 0.05) / (l2 + 0.05) >= 10, "Tương phản canvas phải >= 10:1");
+  for (const scope of [":root", ".dark"]) {
+    const bg = value(scope, "--canvas");
+    const fg = value(scope, "--canvas-foreground");
+    assert.match(
+      bg,
+      /^#[0-9a-f]{6}$/i,
+      `${scope} --canvas phải là hex 6 ký tự`
+    );
+    assert.match(
+      fg,
+      /^#[0-9a-f]{6}$/i,
+      `${scope} --canvas-foreground phải là hex 6 ký tự`
+    );
+    const [l1, l2] = [lum(bg), lum(fg)].sort((a, b) => b - a);
+    assert.ok(
+      (l1 + 0.05) / (l2 + 0.05) >= 10,
+      `Tương phản canvas ở ${scope} phải >= 10:1`
+    );
+  }
 });
 
 test("chrome sáng dùng indigo, bo góc 8px", () => {
@@ -222,7 +230,7 @@ test("logo bo góc 6px, dùng indigo", () => {
   assert.doesNotMatch(logo, /#0f766e|#0e7490/);
 });
 
-test("màu chip cảm xúc theo ngữ cảnh nền, không phụ thuộc theme", () => {
+test("màu chip cảm xúc theo ngữ cảnh nền sáng (:root) và tối (.dark)", () => {
   for (const name of [
     "--emotion-sky",
     "--emotion-emerald",
@@ -230,18 +238,7 @@ test("màu chip cảm xúc theo ngữ cảnh nền, không phụ thuộc theme",
     "--emotion-purple",
     "--emotion-slate",
   ]) {
-    assert.ok(css.includes(`${name}:`), `thiếu biến ${name}`);
-  }
-  const canvas = block(".studio-canvas");
-  assert.match(canvas, /--emotion-sky:/);
-  assert.match(canvas, /--emotion-amber:/);
-  for (const name of [
-    "--emotion-sky",
-    "--emotion-emerald",
-    "--emotion-amber",
-    "--emotion-purple",
-    "--emotion-slate",
-  ]) {
+    assert.match(block(":root"), new RegExp(`${name}:`), `:root thiếu ${name}`);
     assert.match(block(".dark"), new RegExp(`${name}:`), `.dark thiếu ${name}`);
   }
 });
