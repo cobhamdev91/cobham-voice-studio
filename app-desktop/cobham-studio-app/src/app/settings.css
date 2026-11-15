@@ -363,7 +363,7 @@
 }
 .dark .model-card-icon {
   color: var(--color-brand-300);
-  background: rgb(45 212 191 / 12%);
+  background: rgb(129 140 248 / 14%);
 }
 .model-card[data-active] .model-card-icon {
   color: #fff;
@@ -407,7 +407,7 @@
 }
 .dark .model-tag[data-highlight] {
   color: var(--color-brand-200);
-  background: rgb(45 212 191 / 16%);
+  background: rgb(129 140 248 / 18%);
 }
 .model-tag[data-highlight="warn"] {
   color: #92400e;
@@ -642,7 +642,7 @@
 }
 .dark .settings-toggle-icon {
   color: var(--color-brand-300);
-  background: rgb(45 212 191 / 12%);
+  background: rgb(129 140 248 / 14%);
 }
 .settings-toggle-text {
   display: flex;

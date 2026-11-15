@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   addCustomVoice,
   type ConsentInfo,
@@ -29,6 +30,7 @@ import { EmotionBar } from "./EmotionBar";
 const errorText = (err: unknown, fallback: string) =>
   err instanceof Error && err.message ? err.message : fallback;
 
+/** Props cho tab nhân bản giọng nói từ đoạn ghi âm hoặc file mẫu cục bộ. */
 interface VoiceCloningTabProps {
   apiUrl: string;
   isActive: boolean;
@@ -44,6 +46,7 @@ interface VoiceCloningTabProps {
 const SOURCE_EXTENSIONS = [".mp3", ".wav", ".m4a"];
 const SOURCE_ACCEPT = `${SOURCE_EXTENSIONS.join(",")},audio/mpeg,audio/wav,audio/mp4`;
 const SOURCE_FORMATS = "MP3, WAV hoặc M4A";
+/** Tab nhân bản giọng đọc cá nhân hoá, lưu mô hình giọng cục bộ và đọc thử văn bản. */
 export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
   apiUrl,
   isActive,
@@ -408,11 +411,11 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
               {inputSource === "recording" &&
                 (isRecording ? (
                   <button
-                    className="flex animate-pulse items-center gap-1.5 rounded-lg bg-slate-800 px-3 py-1.5 font-semibold text-white text-xs"
+                    className="flex animate-pulse items-center gap-1.5 rounded-lg bg-muted px-3 py-1.5 font-semibold text-muted-foreground text-xs"
                     onClick={stopRecording}
                     type="button"
                   >
-                    <Square className="h-3.5 w-3.5 fill-white" />
+                    <Square className="h-3.5 w-3.5 fill-current" />
                     Dừng
                   </button>
                 ) : (
@@ -520,8 +523,8 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
             <p className="text-[12px] text-muted-foreground">
               Giọng và cam kết chỉ lưu trên máy của bạn.
             </p>
-            <button
-              className="studio-primary flex w-full items-center justify-center gap-2 rounded-lg bg-brand-600 px-4 py-2 font-semibold text-white text-xs disabled:cursor-not-allowed disabled:opacity-50"
+            <Button
+              className="h-auto w-full rounded-lg py-2 text-xs"
               disabled={
                 !(
                   audioFile &&
@@ -536,6 +539,7 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
               }
               onClick={handleSave}
               type="button"
+              variant="studio"
             >
               {savedVoice ? (
                 <CheckCircle2 className="h-4 w-4" />
@@ -543,7 +547,7 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
                 <ShieldCheck className="h-4 w-4" />
               )}
               {saveLabel}
-            </button>
+            </Button>
             {savedVoice && (
               <p className="text-[12px] text-muted-foreground" role="status">
                 Đã lưu “{savedVoice}”. Chọn giọng này ở TTS Studio, Hội thoại
@@ -602,15 +606,17 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
             Khi đăng tải công khai, phải ghi rõ “giọng đọc được tạo bằng AI”.
           </strong>
         </div>
-        <button
-          className="studio-primary flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-brand-500 to-teal-600 px-6 py-2.5 font-bold text-sm text-white disabled:cursor-not-allowed disabled:opacity-50"
+        <Button
+          className="px-6 font-bold"
           disabled={!(savedVoice && targetText.trim()) || isGenerating}
           onClick={handleGenerate}
+          size="studio"
           type="button"
+          variant="studio"
         >
           <Sparkles className="h-4 w-4" />
           {isGenerating ? "Đang đọc..." : "Đọc thử"}
-        </button>
+        </Button>
         {errorMessage && (
           <div className="flex items-center gap-2 rounded-lg border border-rose-500/20 bg-rose-500/10 px-3 py-2 text-rose-600 text-xs dark:text-rose-400">
             <AlertTriangle className="h-4 w-4 flex-shrink-0" />

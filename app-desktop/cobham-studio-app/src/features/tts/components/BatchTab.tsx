@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { synthesizeSpeech, synthesizeSpeechWithSubtitles } from "../api";
 import { downloadBlobAsFile } from "../audio-engine";
 import { batchFileName, parseBatchScript } from "../batch-parse";
@@ -25,6 +26,7 @@ import type { VoiceOption } from "../types";
 import { groupVoices, voiceOptionLabel } from "../voice-label";
 import { createZip } from "../zip";
 
+/** Props cho tab tạo giọng nói hàng loạt theo từng đoạn đánh dấu `[P1]`, `[P2]`... */
 interface BatchTabProps {
   apiUrl: string;
   defaultVoiceId: string;
@@ -156,6 +158,7 @@ function BatchRow({
   );
 }
 
+/** Tab xử lý hàng loạt đoạn văn bản theo mốc `[P1]`, `[P2]` và đóng gói tải về `.zip`. */
 export const BatchTab: React.FC<BatchTabProps> = ({
   apiUrl,
   voices,
@@ -564,14 +567,16 @@ export const BatchTab: React.FC<BatchTabProps> = ({
                 <Square className="h-4 w-4" /> Dừng ({doneCount}/{items.length})
               </button>
             ) : (
-              <button
-                className="studio-primary flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-teal-600 px-4 py-2.5 font-semibold text-sm text-white shadow-brand-500/20 shadow-md transition-all hover:from-brand-600 hover:to-teal-700 active:scale-95 disabled:opacity-50"
+              <Button
+                className="w-full"
                 disabled={items.length === 0 || !voiceId || pendingCount === 0}
                 onClick={handleGenerate}
+                size="studio"
                 type="button"
+                variant="studio"
               >
                 <Play className="h-4 w-4" /> {generateLabel}
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -606,14 +611,16 @@ export const BatchTab: React.FC<BatchTabProps> = ({
                   <RotateCcw className="h-3.5 w-3.5" /> Tạo lại từ đầu
                 </button>
               )}
-              <button
-                className="studio-primary flex items-center gap-1.5 rounded-lg bg-brand-600 px-3 py-1.5 font-semibold text-white text-xs shadow-sm hover:bg-brand-700 disabled:opacity-40"
+              <Button
+                className="h-auto rounded-lg px-3 py-1.5 text-xs"
                 disabled={doneCount === 0 || running}
                 onClick={handleDownloadZip}
+                size="sm"
                 type="button"
+                variant="studio"
               >
                 <FileArchive className="h-3.5 w-3.5" /> Tải tất cả (.zip)
-              </button>
+              </Button>
             </div>
           </div>
 

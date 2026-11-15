@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { APP_NAME } from "@/config/branding";
 import env from "@/config/env";
 import {
   type AppUpdateInfo,
@@ -70,7 +72,6 @@ import {
 import { LanguageSelect, ModelCapsProvider } from "./model-caps";
 import { pauseOtherAudio, toggleAudioPlayback } from "./playback";
 import { startStartupPolling } from "./startup-polling";
-import { APP_NAME } from "@/config/branding";
 import type {
   ActiveTab,
   AppSettings,
@@ -102,16 +103,15 @@ const DEFAULT_SETTINGS: AppSettings = {
   silenceDuration: 0.2,
 };
 
-const DEFAULT_TEXT =
-  `Xin chào các bạn! Chào mừng đến với ${APP_NAME}. Đây là giải pháp trí tuệ nhân tạo tổng hợp giọng nói tiếng Việt với chất lượng phòng thu 48kHz, hỗ trợ đầy đủ các tính năng: Voice Cloning, Podcast đa người nói và đọc tài liệu PDF.`;
+const DEFAULT_TEXT = `Xin chào các bạn! Chào mừng đến với ${APP_NAME}. Đây là giải pháp trí tuệ nhân tạo tổng hợp giọng nói tiếng Việt với chất lượng phòng thu 48kHz, hỗ trợ đầy đủ các tính năng: Voice Cloning, Podcast đa người nói và đọc tài liệu PDF.`;
 // Doan mau khi dang dung mo hinh giong nuoc ngoai (Supertonic, mac dinh tieng Anh).
-const DEFAULT_TEXT_FOREIGN =
-  `Hello and welcome to ${APP_NAME}. This voice runs entirely on your computer, with no internet connection needed. Choose a language and a voice, then press the button to listen.`;
+const DEFAULT_TEXT_FOREIGN = `Hello and welcome to ${APP_NAME}. This voice runs entirely on your computer, with no internet connection needed. Choose a language and a voice, then press the button to listen.`;
 
 // Seed dùng khi bật "Ổn định". Cố định (không ngẫu nhiên) để mở lại app vẫn ra
 // đúng bản cũ; đổi giá trị này sẽ đổi giọng của mọi bản "Ổn định" về sau.
 const STABLE_SEED = 20_251_021;
 
+/** Màn hình studio tổng hợp giọng nói chính, quản lý kết nối máy chủ, tab chức năng và trình phát chung. */
 export const TtsStudio: React.FC = () => {
   useEffect(() => {
     const frame = requestAnimationFrame(() =>
@@ -260,7 +260,10 @@ export const TtsStudio: React.FC = () => {
         if (Object.keys(rest).length > 0) {
           setSettings((prev) => {
             const next = { ...prev, ...rest };
-            localStorage.setItem("cobham_studio_settings", JSON.stringify(next));
+            localStorage.setItem(
+              "cobham_studio_settings",
+              JSON.stringify(next)
+            );
             return next;
           });
         }
@@ -391,6 +394,8 @@ export const TtsStudio: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // connectionAttempt tăng mỗi lần người dùng bấm Thử lại để chạy lại vòng polling.
+    void connectionAttempt;
     setConnectionStatus("connecting");
     setLoadingState("starting");
     setLoadingMessage("Đang kết nối tới dịch vụ giọng nói...");
@@ -472,7 +477,7 @@ export const TtsStudio: React.FC = () => {
         setErrorMessage(willRetry ? null : message);
       },
     });
-  }, [settings.apiUrl, connectionAttempt]);
+  }, [settings.apiUrl, connectionAttempt, loadHistory]);
 
   // Giọng tuỳ chỉnh đã được server lưu thật (xem VoiceCloningTab) - chỉ cần nạp
   // lại danh sách rồi chọn nó, không còn bookmark giả ở localStorage nữa.
@@ -585,16 +590,20 @@ export const TtsStudio: React.FC = () => {
       });
 
       setPlaybackStatus("idle");
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (abortControllerRef.current !== controller) {
         return;
       }
-      if (err.name === "AbortError") {
+      if (err instanceof Error && err.name === "AbortError") {
         setPlaybackStatus("idle");
       } else {
         console.error("[TTS Error]", err);
         setPlaybackStatus("error");
-        setErrorMessage(err.message || "Lỗi trong quá trình tạo giọng nói");
+        setErrorMessage(
+          err instanceof Error && err.message
+            ? err.message
+            : "Lỗi trong quá trình tạo giọng nói"
+        );
       }
     } finally {
       // Yêu cầu đã huỷ không được xoá tiến trình của yêu cầu mới hơn.
@@ -949,18 +958,20 @@ export const TtsStudio: React.FC = () => {
                       )}
                     </details>
                     <div className="studio-generate-area">
-                      <button
-                        className="studio-primary studio-generate"
+                      <Button
+                        className="studio-generate h-11"
                         data-busy={isGenerating || undefined}
                         disabled={
                           connectionStatus !== "connected" || isGenerating
                         }
                         onClick={handleGenerateOrPlay}
+                        size="studio"
                         type="button"
+                        variant="studio"
                       >
                         <Sparkles size={16} />
                         {isGenerating ? "Đang tạo…" : "Tạo giọng đọc"}
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </div>

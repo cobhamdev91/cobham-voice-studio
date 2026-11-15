@@ -7,8 +7,10 @@ import {
   Volume2,
 } from "lucide-react";
 import type React from "react";
+import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/config/branding";
 
+/** Props cho màn hình khởi động khi nạp backend và mô hình giọng nói. */
 interface LoadingScreenProps {
   isDark: boolean;
   message: string;
@@ -17,6 +19,7 @@ interface LoadingScreenProps {
   status: "starting" | "downloading" | "ready" | "failed";
 }
 
+/** Màn hình chờ khởi động dịch vụ, nạp mô hình và xử lý thử kết nối lại khi lỗi. */
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   status,
   message,
@@ -28,11 +31,11 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
       <div className="relative flex w-full max-w-md flex-col items-center overflow-hidden rounded-3xl border border-border/80 bg-card p-8 text-center shadow-2xl">
         {/* Background glow effects */}
         <div className="pointer-events-none absolute -top-20 -left-20 h-48 w-48 rounded-full bg-brand-500/20 blur-3xl" />
-        <div className="pointer-events-none absolute -right-20 -bottom-20 h-48 w-48 rounded-full bg-cyan-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute -right-20 -bottom-20 h-48 w-48 rounded-full bg-brand-400/20 blur-3xl" />
 
         {/* Animated Brand Logo */}
         <div className="relative mb-6">
-          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-500 to-cyan-500 text-white shadow-brand-500/25 shadow-md">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-600 to-brand-800 text-white shadow-brand-500/25 shadow-md">
             <Volume2 className="h-10 w-10 animate-pulse" />
           </div>
           {status === "failed" ? (
@@ -106,14 +109,16 @@ export const LoadingScreen: React.FC<LoadingScreenProps> = ({
         {/* Action button if failed or taking too long */}
         {status === "failed" ? (
           <div className="w-full space-y-2">
-            <button
-              className="studio-primary flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-teal-600 px-4 py-3 font-bold text-white text-xs shadow-brand-500/20 shadow-md transition-all hover:from-brand-600 hover:to-teal-700 active:scale-95"
+            <Button
+              className="w-full py-3 font-bold text-xs"
               onClick={onRetry}
+              size="studio"
               type="button"
+              variant="studio"
             >
               <RefreshCw className="h-3.5 w-3.5" />
               <span>Thử kết nối lại ngay</span>
-            </button>
+            </Button>
             <button
               className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-border bg-secondary/80 px-4 py-2.5 font-medium text-foreground text-xs transition-all hover:bg-secondary"
               onClick={onOpenSettings}

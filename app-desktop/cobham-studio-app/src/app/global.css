@@ -19,17 +19,19 @@
   --text-xs--line-height: 1.4;
   --font-sans: "Inter Variable", "Segoe UI", system-ui, sans-serif;
   --font-heading: "Be Vietnam Pro", "Inter Variable", "Segoe UI", sans-serif;
-  --color-brand-50: #f0fdfa;
-  --color-brand-100: #ccfbf1;
-  --color-brand-200: #99f6e4;
-  --color-brand-300: #5eead4;
-  --color-brand-400: #2dd4bf;
-  --color-brand-500: #0d9488;
-  --color-brand-600: #0f766e;
-  --color-brand-700: #115e59;
-  --color-brand-800: #134e4a;
-  --color-brand-900: #0f3d3a;
-  --color-brand-950: #042f2e;
+  /* Font mono hệ thống: app chạy offline nên không thêm font mới cần tải về. */
+  --font-mono: ui-monospace, "Cascadia Mono", Menlo, Consolas, monospace;
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+  --color-brand-950: #1e1b4b;
 }
 
 @theme inline {
@@ -71,96 +73,136 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: #eef3f2;
-  --foreground: #0f172a;
+  --radius: 0.5rem;
+  --background: #eceef1;
+  --foreground: #14161a;
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #14161a;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #0f766e;
+  --popover-foreground: #14161a;
+  --primary: #4f46e5;
   --primary-foreground: #ffffff;
-  --secondary: #e6eeee;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #334155;
-  /* Xanh ngọc dịu thay bạc hà #ccfbf1: nền bạc hà làm chữ teal trông nhoè. */
-  --accent: #def3ef;
-  --accent-foreground: #0b4f4a;
+  --secondary: #f1f3f6;
+  --secondary-foreground: #14161a;
+  --muted: #f4f5f7;
+  --muted-foreground: #5b6270;
+  /* Nền tím rất nhạt: chữ indigo trên nền này vẫn rõ. */
+  --accent: #eef0fe;
+  --accent-foreground: #3730a3;
   --destructive: #dc2626;
-  --border: #c9d6dd;
-  --input: #b8c8d9;
-  --ring: #0d9488;
+  --border: #dde0e6;
+  --input: #c9ced8;
+  --ring: #6366f1;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  /* Thanh bên sáng liền với thanh tiêu đề; mục đang chọn là khối teal đặc. */
-  --sidebar: #ffffff;
+  /* Thanh bên có nền riêng, tách khỏi thanh tiêu đề trắng. */
+  --sidebar: #f7f8fa;
   --sidebar-foreground: #1e293b;
-  --sidebar-primary: #5eead4;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: #0f766e;
+  --sidebar-primary: #818cf8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #4f46e5;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #c9d6dd;
+  --sidebar-border: #dde0e6;
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Màu nhấn phụ, dùng tiết kiệm: đang tạo, số đếm thanh bên, nút Cười. */
   --accent-warm: #c2410c;
-  --sidebar-muted: #0f766e;
-  --sidebar-hover: #e0f2ef;
-  --sidebar-hover-foreground: #115e59;
-  --sidebar-selected-shadow: 0 6px 14px -8px rgb(15 118 110 / 70%);
+  --sidebar-muted: #4f46e5;
+  --sidebar-hover: #eceef4;
+  --sidebar-hover-foreground: #3730a3;
+  --sidebar-selected-shadow: 0 6px 14px -8px rgb(79 70 229 / 70%);
 
   --shadow-sm: 0 1px 2px rgb(16 24 40 / 8%);
   --shadow-md:
-    0 1px 3px rgb(16 24 40 / 10%), 0 16px 36px -18px rgb(15 61 58 / 30%);
+    0 1px 3px rgb(16 24 40 / 8%), 0 16px 36px -20px rgb(20 22 29 / 45%);
+
+  /* Màn hình làm việc (panel main) ở chế độ sáng: nền sáng, chữ đậm. */
+  --canvas: #ffffff;
+  --canvas-foreground: #14161a;
+  --canvas-muted: #5b6270;
+  --canvas-border: #dde0e6;
+  --canvas-toolbar: #f4f5f7;
+  --canvas-accent: #4f46e5;
+
+  /* Màu chip cảm xúc trên nền chrome sáng: chữ đậm. */
+  --emotion-sky: #075985;
+  --emotion-emerald: #065f46;
+  --emotion-amber: #92400e;
+  --emotion-purple: #6b21a8;
+  --emotion-slate: #475569;
+
+  /* Màu trạng thái/hành động theo token mode, tránh kẹp dark: thủ công. */
+  --status-amber: #b45309;
+  --status-violet: #6d28d9;
+  --status-sky: #0369a1;
+  --status-rose: #be123c;
 }
 
 .dark {
-  --background: #020617;
-  --foreground: #f1f5f9;
-  --card: #0f172a;
-  --card-foreground: #f1f5f9;
-  --popover: #162239;
-  --popover-foreground: #f1f5f9;
-  --primary: #2dd4bf;
-  --primary-foreground: #042f2b;
-  --secondary: #1e293b;
-  --secondary-foreground: #f1f5f9;
-  --muted: #1e293b;
-  --muted-foreground: #a8b8ce;
-  --accent: #134e4a;
-  --accent-foreground: #99f6e4;
+  --background: #0b0c10;
+  --foreground: #e8eaf0;
+  --card: #121419;
+  --card-foreground: #e8eaf0;
+  --popover: #171a21;
+  --popover-foreground: #e8eaf0;
+  --primary: #818cf8;
+  --primary-foreground: #0b0c10;
+  --secondary: #1b1e27;
+  --secondary-foreground: #e8eaf0;
+  --muted: #171a21;
+  --muted-foreground: #99a0b0;
+  --accent: #232742;
+  --accent-foreground: #c7d2fe;
   --destructive: #f87171;
-  --border: #293b55;
-  --input: #415775;
-  --ring: #2dd4bf;
+  --border: #262a36;
+  --input: #333849;
+  --ring: #818cf8;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  /* Cùng tông xanh than với thanh tiêu đề và thẻ; teal chỉ ở mục đang chọn. Nền
-     teal tối riêng cho thanh bên làm lệch tông với phần còn lại. */
-  --sidebar: #0f172a;
+  /* Thanh bên tối hơn thẻ để tách khỏi thanh tiêu đề. */
+  --sidebar: #0e1015;
   --sidebar-foreground: #cbd5e1;
-  --sidebar-primary: #2dd4bf;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: rgb(45 212 191 / 14%);
-  --sidebar-accent-foreground: #99f6e4;
-  --sidebar-border: #293b55;
+  --sidebar-primary: #818cf8;
+  --sidebar-primary-foreground: #0b0c10;
+  --sidebar-accent: rgb(129 140 248 / 14%);
+  --sidebar-accent-foreground: #c7d2fe;
+  --sidebar-border: #262a36;
   --sidebar-ring: oklch(0.556 0 0);
 
   --accent-warm: #fb923c;
-  --sidebar-muted: #5eead4;
-  --sidebar-hover: #1e293b;
-  --sidebar-hover-foreground: #f1f5f9;
+  --sidebar-muted: #818cf8;
+  --sidebar-hover: #1b1e27;
+  --sidebar-hover-foreground: #e8eaf0;
   --sidebar-selected-shadow: none;
 
   --shadow-sm: none;
   --shadow-md: none;
+
+  /* Màn hình làm việc (panel main) ở chế độ tối. */
+  --canvas: #14161d;
+  --canvas-foreground: #e8eaf0;
+  --canvas-muted: #98a0b2;
+  --canvas-border: #262a36;
+  --canvas-toolbar: #1b1e27;
+  --canvas-accent: #818cf8;
+
+  /* Màu chip cảm xúc trên nền chrome tối: chữ sáng. */
+  --emotion-sky: #7dd3fc;
+  --emotion-emerald: #6ee7b7;
+  --emotion-amber: #fcd34d;
+  --emotion-purple: #d8b4fe;
+  --emotion-slate: #cbd5e1;
+
+  --status-amber: #fbbf24;
+  --status-violet: #c4b5fd;
+  --status-sky: #7dd3fc;
+  --status-rose: #fb7185;
 }
 
 @layer base {
@@ -280,8 +322,13 @@
   width: 30px;
   height: 30px;
   color: #fff;
-  background: linear-gradient(135deg, var(--color-brand-600), #0e7490);
-  border-radius: 8px;
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-600),
+    var(--color-brand-800)
+  );
+  border-radius: 6px;
+  box-shadow: 0 4px 12px -4px rgb(79 70 229 / 45%);
 }
 .studio-model {
   display: flex;
@@ -304,9 +351,8 @@
   font-weight: 600;
   color: var(--foreground);
   white-space: nowrap;
-  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 999px;
-  box-shadow: var(--shadow-sm);
 }
 .studio-icon-button {
   display: grid;
@@ -330,8 +376,9 @@
   width: 248px;
   padding: 8px 12px;
   overflow: hidden;
+  color: var(--sidebar-foreground);
   background: var(--sidebar);
-  border-right: 1px solid var(--border);
+  border-right: 1px solid var(--sidebar-border);
 }
 .studio-nav-groups {
   flex: 1;
@@ -469,8 +516,10 @@
 .studio-player {
   flex-shrink: 0;
   padding: 12px 20px;
-  background: var(--card);
-  border-top: 1px solid var(--border);
+  background: var(--canvas-toolbar);
+  border: 1px solid var(--canvas-border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
 }
 @media (width < 1024px) {
   .studio-body {
@@ -517,27 +566,50 @@
   }
 }
 
-/* Số liệu thẳng hàng, dùng chung font Inter đã đóng gói để chạy ngoại tuyến. */
-.font-mono,
+/* Số liệu thẳng hàng theo bảng chữ số đều độ rộng. */
 .tabular-nums {
-  font-family: var(--font-sans);
   font-variant-numeric: tabular-nums;
 }
+/* Nút chính: một định nghĩa duy nhất cho gradient indigo, bóng và trạng thái hover/disabled. */
 .studio-primary {
   font-weight: 600;
-  color: var(--primary-foreground);
-  background: linear-gradient(115deg, var(--color-brand-600), #0e7490);
   border-radius: 11px;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s,
+    filter 0.15s;
 }
-.dark .studio-primary {
+.studio-primary[class] {
   color: var(--primary-foreground);
-  background: var(--primary);
+  background: linear-gradient(
+    115deg,
+    var(--color-brand-500),
+    var(--color-brand-700)
+  );
+  box-shadow: 0 8px 20px -10px rgb(79 70 229 / 60%);
+}
+.dark .studio-primary[class] {
+  color: var(--primary-foreground);
+  background: linear-gradient(
+    115deg,
+    var(--color-brand-300),
+    var(--color-brand-400)
+  );
+  box-shadow: 0 8px 22px -10px rgb(129 140 248 / 50%);
 }
 .studio-primary:disabled {
   opacity: 0.5;
 }
+.dark .studio-primary[class]:disabled {
+  color: var(--muted-foreground);
+  background: var(--secondary);
+  box-shadow: none;
+  opacity: 1;
+}
 .studio-primary:not(:disabled):hover {
-  filter: brightness(0.92);
+  box-shadow: 0 12px 24px -10px rgb(79 70 229 / 68%);
+  filter: brightness(1.05);
+  transform: translateY(-1px);
 }
 
 /* TTS: các vùng dùng chung lưới để trình phát không bị tháo khỏi DOM khi đổi tab. */
@@ -564,6 +636,7 @@
   margin: 20px auto 0;
 }
 .studio-properties {
+  --studio-section-divider: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   grid-area: properties;
@@ -580,13 +653,14 @@
   flex: 1;
   min-height: 80px;
 }
+.studio-properties .studio-primary {
+  margin-top: auto;
+}
 .studio-workspace-tts .studio-player {
   grid-area: player;
   width: 100%;
-  padding: 0;
+  padding: 12px 16px;
   margin: 0 auto 20px;
-  background: transparent;
-  border: 0;
 }
 .studio-text-editor {
   display: flex;
@@ -594,9 +668,9 @@
   height: 100%;
   min-height: 0;
   overflow: hidden;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
+  background: var(--canvas);
+  border: 1px solid var(--canvas-border);
+  border-radius: 10px;
   box-shadow: var(--shadow-md);
 }
 .studio-editor-heading {
@@ -606,21 +680,23 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 24px 12px;
+  color: var(--canvas-foreground);
 }
 .studio-editor-heading h2 {
   font-size: 22px;
   font-weight: 700;
+  color: var(--canvas-foreground);
   letter-spacing: -0.025em;
 }
 .studio-editor-stats {
   font-size: 13px;
   font-variant-numeric: tabular-nums;
-  color: var(--muted-foreground);
+  color: var(--canvas-muted);
 }
 .studio-editor-toolbar {
   padding: 4px;
   margin: 0 16px;
-  background: var(--secondary);
+  background: var(--canvas-toolbar);
   border-radius: 10px 10px 0 0;
 }
 .studio-editor-toolbar > div {
@@ -631,19 +707,19 @@
   height: 30px;
   padding: 0 8px;
   font-size: 13px;
+  color: var(--canvas-muted);
   background: transparent;
   border: 0;
   box-shadow: none;
 }
 .studio-editor-toolbar button:hover {
-  color: var(--foreground);
-  background: var(--card);
-  box-shadow: var(--shadow-sm);
+  color: var(--canvas-foreground);
+  background: var(--canvas);
 }
 .studio-emotions {
   padding: 0 4px 4px;
   margin: 0 16px;
-  background: var(--secondary);
+  background: var(--canvas-toolbar);
   border-radius: 0 0 10px 10px;
 }
 .studio-emotions > div {
@@ -677,7 +753,7 @@
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 1.9;
-  color: var(--foreground);
+  color: var(--canvas-foreground);
   resize: none;
   user-select: text;
   outline: none;
@@ -688,7 +764,7 @@
   outline-offset: -2px;
 }
 .studio-textarea::placeholder {
-  color: var(--muted-foreground);
+  color: var(--canvas-muted);
 }
 .studio-voice-selector {
   gap: 8px;
@@ -705,11 +781,12 @@
   justify-content: space-between;
 }
 .studio-voice-heading h2 {
-  font-size: 13px;
+  font-family: var(--font-mono);
+  font-size: 11px;
   font-weight: 600;
   color: var(--muted-foreground);
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
 }
 .studio-voice-filter {
   display: flex;
@@ -774,7 +851,7 @@
   gap: 6px;
   padding-top: 12px;
   margin-top: 4px;
-  border-top: 1px solid var(--border);
+  border-top: var(--studio-section-divider);
 }
 .studio-speed > div:last-child {
   display: none;
@@ -789,7 +866,7 @@
 }
 .studio-generation-options {
   padding-top: 8px;
-  border-top: 1px solid var(--border);
+  border-top: var(--studio-section-divider);
 }
 .studio-switch-row {
   display: flex;
@@ -840,7 +917,7 @@
 }
 .studio-generate-area {
   padding-top: 12px;
-  border-top: 1px solid var(--border);
+  border-top: var(--studio-section-divider);
 }
 .studio-generate {
   display: flex;
@@ -857,11 +934,11 @@
   flex-wrap: wrap;
   gap: 12px;
   align-items: center;
-  padding: 16px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: var(--shadow-md);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 .studio-audio-player > div:first-of-type {
   width: 100%;
@@ -894,12 +971,13 @@
 }
 .studio-export summary {
   padding: 8px 12px;
+  color: var(--canvas-foreground);
   white-space: nowrap;
   list-style: none;
-  background: var(--card);
-  border: 1px solid var(--input);
+  background: var(--canvas);
+  border: 1px solid var(--canvas-border);
   border-radius: 8px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 .studio-export-menu {
   position: absolute;
@@ -911,8 +989,9 @@
   gap: 4px;
   min-width: 140px;
   padding: 6px;
-  background: var(--popover);
-  border: 1px solid var(--border);
+  color: var(--canvas-foreground);
+  background: var(--canvas-toolbar);
+  border: 1px solid var(--canvas-border);
   border-radius: 10px;
   box-shadow: var(--shadow-md);
 }
@@ -979,15 +1058,6 @@
 }
 
 /* Cùng một hệ thẻ và nút cho các tab, hộp thoại và màn hình khởi động. */
-.studio-primary[class] {
-  color: var(--primary-foreground);
-  background: linear-gradient(115deg, var(--color-brand-600), #0e7490);
-  box-shadow: var(--shadow-sm);
-}
-.dark .studio-primary[class] {
-  color: var(--primary-foreground);
-  background: var(--primary);
-}
 .studio-main > :where(div:not([hidden])) {
   min-width: 0;
 }
@@ -1028,7 +1098,7 @@
   gap: 8px;
   align-items: center;
   padding-top: 8px;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--canvas-border);
 }
 .studio-audio-player > div:nth-of-type(2) {
   grid-row: 1;
@@ -1044,10 +1114,6 @@
 }
 .studio-play-button:disabled {
   opacity: 0.45;
-}
-.dark .studio-text-editor,
-.dark .studio-audio-player {
-  background: var(--popover);
 }
 @media (width < 1280px) {
   .studio-main .studio-tts-layout {
@@ -1069,7 +1135,7 @@
   .studio-audio-player {
     grid-template-columns: 42px minmax(0, 1fr);
     gap: 8px;
-    padding: 12px;
+    padding: 0;
   }
   .studio-history-row {
     grid-template-columns: minmax(0, 1fr);
@@ -1330,15 +1396,8 @@
 .studio-header {
   box-shadow: var(--shadow-sm);
 }
-.studio-logo {
-  box-shadow: 0 4px 12px -4px rgb(13 148 136 / 55%);
-}
 
 /* Thanh bên */
-.studio-sidebar {
-  color: var(--sidebar-foreground);
-  border-right-color: var(--sidebar-border);
-}
 .studio-nav-group h2 {
   font-family: var(--font-sans);
   font-weight: 700;
@@ -1380,33 +1439,6 @@
   }
 }
 
-/* Nút chính: gradient teal, bóng màu, nhấc nhẹ khi rê chuột. */
-.studio-primary[class] {
-  background: linear-gradient(
-    115deg,
-    var(--color-brand-500),
-    var(--color-brand-700)
-  );
-  box-shadow: 0 8px 20px -10px rgb(13 148 136 / 70%);
-  transition:
-    transform 0.15s,
-    box-shadow 0.15s,
-    filter 0.15s;
-}
-.dark .studio-primary[class] {
-  color: var(--primary-foreground);
-  background: linear-gradient(
-    115deg,
-    var(--color-brand-300),
-    var(--color-brand-400)
-  );
-  box-shadow: 0 8px 22px -10px rgb(45 212 191 / 55%);
-}
-.studio-primary:not(:disabled):hover {
-  box-shadow: 0 12px 24px -10px rgb(13 148 136 / 75%);
-  filter: brightness(1.05);
-  transform: translateY(-1px);
-}
 /* Đang tạo: nền cam có sọc chạy, không mờ như nút bị khoá. */
 .studio-generate[data-busy][class] {
   color: #fff;
@@ -1440,7 +1472,7 @@
     var(--color-brand-400),
     var(--color-brand-700)
   );
-  box-shadow: 0 6px 16px -6px rgb(13 148 136 / 70%);
+  box-shadow: 0 6px 16px -6px rgb(79 70 229 / 60%);
   transition: transform 0.15s;
 }
 .dark .studio-play-button {
@@ -1462,10 +1494,10 @@
 }
 @keyframes studio-play-ring {
   from {
-    box-shadow: 0 0 0 0 rgb(20 184 166 / 45%);
+    box-shadow: 0 0 0 0 rgb(99 102 241 / 45%);
   }
   to {
-    box-shadow: 0 0 0 12px rgb(20 184 166 / 0%);
+    box-shadow: 0 0 0 12px rgb(99 102 241 / 0%);
   }
 }
 .studio-wave {
@@ -1473,10 +1505,6 @@
 }
 
 /* Danh sách giọng: avatar có màu riêng, vùng miền có màu, giọng chọn có vạch trái. */
-.studio-voice-heading h2 {
-  font-weight: 700;
-  color: var(--foreground);
-}
 .studio-voice-selected {
   background: var(--color-brand-50);
   border-color: transparent;
@@ -1487,8 +1515,8 @@
   box-shadow: inset 3px 0 var(--color-brand-400);
 }
 .studio-voice-avatar {
-  --tone-bg: #ccfbf1;
-  --tone-fg: #115e59;
+  --tone-bg: #e0e7ff;
+  --tone-fg: #3730a3;
   font-weight: 700;
   color: var(--tone-fg);
   background: var(--tone-bg);
@@ -1524,8 +1552,8 @@
   --tone-fg: #4338ca;
 }
 .dark .studio-voice-avatar {
-  --tone-bg: #134e4a;
-  --tone-fg: #99f6e4;
+  --tone-bg: #1e1b4b;
+  --tone-fg: #c7d2fe;
 }
 .dark .studio-voice-avatar[data-tone="1"] {
   --tone-bg: #1e3a8a;
@@ -1554,13 +1582,6 @@
 .dark .studio-voice-avatar[data-tone="7"] {
   --tone-bg: #312e81;
   --tone-fg: #c7d2fe;
-}
-/* Nút chính bị khoá ở nền tối: xám trung tính thay vì teal mờ (trông đục, bẩn màu). */
-.dark .studio-primary[class]:disabled {
-  color: var(--muted-foreground);
-  background: var(--secondary);
-  box-shadow: none;
-  opacity: 1;
 }
 
 /* Danh sách giọng thoáng hơn: avatar nhạt, không viền, hàng cao hơn một chút. */
@@ -1699,7 +1720,7 @@
     var(--color-brand-700)
   );
   border-radius: 16px;
-  box-shadow: 0 10px 22px -10px rgb(13 148 136 / 70%);
+  box-shadow: 0 10px 22px -10px rgb(79 70 229 / 60%);
 }
 .doc-dropzone-title {
   font-size: 16px;
@@ -2037,9 +2058,13 @@
   width: 48px;
   height: 48px;
   color: #fff;
-  background: linear-gradient(135deg, var(--color-brand-600), #0e7490);
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-600),
+    var(--color-brand-800)
+  );
   border-radius: 12px;
-  box-shadow: 0 6px 16px -6px rgb(13 148 136 / 60%);
+  box-shadow: 0 6px 16px -6px rgb(79 70 229 / 55%);
 }
 .update-dialog-badge {
   padding: 2px 8px;
@@ -2069,4 +2094,8 @@
   padding-top: 14px;
   margin-top: 18px;
   border-top: 1px solid var(--border);
+}
+
+.studio-emotions > div > div:first-child {
+  color: var(--canvas-muted);
 }

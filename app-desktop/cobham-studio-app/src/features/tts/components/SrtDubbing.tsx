@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
 import { type DubStats, dubSrtToHistory, type SrtCue } from "../api";
 import { downloadBlobAsFile } from "../audio-engine";
 import { downloadHistoryAudio, fromServer, srtBlob } from "../history";
@@ -18,6 +19,7 @@ import { LanguageSelect } from "../model-caps";
 import type { HistoryEntry, VoiceOption } from "../types";
 import { groupVoices, voiceOptionLabel } from "../voice-label";
 
+/** Props cho khung lồng tiếng file phụ đề `.srt` theo đúng mốc thời gian từng câu. */
 interface SrtDubbingProps {
   apiUrl: string;
   cues: SrtCue[];
@@ -61,6 +63,7 @@ function describeStats(stats: DubStats): string {
 
 const errorText = (e: unknown) => (e instanceof Error ? e.message : String(e));
 
+/** Giao diện lồng tiếng phụ đề `.srt`, căn nhịp theo từng câu và lưu kết quả vào lịch sử. */
 export const SrtDubbing: React.FC<SrtDubbingProps> = ({
   apiUrl,
   cues,
@@ -241,15 +244,17 @@ export const SrtDubbing: React.FC<SrtDubbingProps> = ({
               <Square className="h-3.5 w-3.5" />
             </button>
           ) : (
-            <button
-              className="studio-primary flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-500 to-teal-600 px-4 py-2.5 font-semibold text-white text-xs shadow-brand-500/20 shadow-md transition-all hover:from-brand-600 hover:to-teal-700 active:scale-95 disabled:opacity-50"
+            <Button
+              className="w-full text-xs"
               disabled={!voiceId}
               onClick={handleDub}
+              size="studio"
               type="button"
+              variant="studio"
             >
               <Mic className="h-4 w-4" />
               <span>Lồng tiếng</span>
-            </button>
+            </Button>
           )}
 
           {error && (

@@ -47,7 +47,7 @@ export const AdvancedGeneration: React.FC<AdvancedGenerationProps> = ({
             </InfoTip>
           </span>
           <div className="flex items-center gap-1">
-            <span className="font-bold font-mono text-brand-600 dark:text-brand-400">
+            <span className="font-bold font-mono text-brand-600 tabular-nums dark:text-brand-400">
               {temperature.toLocaleString("vi-VN", {
                 minimumFractionDigits: 1,
               })}

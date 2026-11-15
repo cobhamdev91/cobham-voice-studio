@@ -10,8 +10,6 @@ import {
   Zap,
 } from "lucide-react";
 import type React from "react";
-import type { AppUpdateInfo } from "../api";
-import { UpdateCheckButton } from "./AppUpdate";
 import {
   APP_NAME,
   AUTHOR_NAME,
@@ -19,7 +17,10 @@ import {
   RELEASES_REPO,
   RELEASES_URL,
 } from "@/config/branding";
+import type { AppUpdateInfo } from "../api";
+import { UpdateCheckButton } from "./AppUpdate";
 
+/** Props cho tab giới thiệu phiên bản, tác giả, giấy phép và công nghệ sử dụng. */
 interface AboutTabProps {
   apiUrl: string;
   engineName?: string;
@@ -29,6 +30,7 @@ interface AboutTabProps {
   update: AppUpdateInfo | null;
 }
 
+/** Trang giới thiệu thông tin ứng dụng, kiểm tra cập nhật và ghi nhận giấy phép. */
 export const AboutTab: React.FC<AboutTabProps> = ({
   apiUrl,
   onUpdateChecked,
@@ -45,7 +47,7 @@ export const AboutTab: React.FC<AboutTabProps> = ({
 
         <div className="relative flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
           <div className="flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-500 via-teal-500 to-cyan-500 text-white shadow-brand-500/25 shadow-md">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-brand-500 via-brand-400 to-brand-300 text-white shadow-brand-500/25 shadow-md">
               <Volume2 className="h-7 w-7" />
             </div>
             <div>
@@ -176,8 +178,8 @@ export const AboutTab: React.FC<AboutTabProps> = ({
         </ul>
         <p className="mt-3 border-amber-500/30 border-t pt-2 text-muted-foreground text-xs leading-relaxed">
           Người dùng tự chịu trách nhiệm trước pháp luật về nội dung mình tạo
-          ra. Tác giả {APP_NAME}, VieNeu-TTS, Supertone và Kokoro không
-          chịu trách nhiệm với việc sử dụng sai mục đích.
+          ra. Tác giả {APP_NAME}, VieNeu-TTS, Supertone và Kokoro không chịu
+          trách nhiệm với việc sử dụng sai mục đích.
         </p>
       </div>
 
@@ -185,9 +187,10 @@ export const AboutTab: React.FC<AboutTabProps> = ({
       <div className="space-y-3 rounded-xl border border-border/80 bg-card p-5 shadow-xs">
         <p className="text-foreground/90 text-sm leading-relaxed">
           <strong>{APP_NAME}</strong> là bản phái sinh mã nguồn mở của{" "}
-          <strong>CIT Voice Studio</strong>, dựa trên <strong>VieNeu-TTS</strong>{" "}
-          của tác giả <strong>Phạm Nguyễn Ngọc Bảo</strong> (giọng tiếng Việt).
-          Giọng ngoài nước dùng <strong>Supertonic 3</strong> của{" "}
+          <strong>CIT Voice Studio</strong>, dựa trên{" "}
+          <strong>VieNeu-TTS</strong> của tác giả{" "}
+          <strong>Phạm Nguyễn Ngọc Bảo</strong> (giọng tiếng Việt). Giọng ngoài
+          nước dùng <strong>Supertonic 3</strong> của{" "}
           <strong>Supertone Inc.</strong> và <strong>Kokoro-82M</strong> của{" "}
           <strong>hexgrad</strong>, tải riêng khi bạn chọn. Ứng dụng độc lập,
           không phải sản phẩm chính thức của VieNeu-TTS, Supertone hay Kokoro.
