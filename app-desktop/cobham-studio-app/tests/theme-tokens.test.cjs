@@ -93,3 +93,59 @@ test("bootstrap nền canvas, không dùng nền sáng", () => {
     "còn nền sáng cũ của bản gốc"
   );
 });
+
+test("editor dùng nền canvas, chữ canvas, bo góc 10px", () => {
+  const editor = block(".studio-text-editor");
+  assert.match(editor, /background:\s*var\(--canvas\)/);
+  assert.match(editor, /border:\s*1px solid var\(--canvas-border\)/);
+  assert.match(editor, /border-radius:\s*10px/);
+});
+
+test("toolbar và thanh cảm xúc dùng nền canvas-toolbar", () => {
+  assert.match(
+    block(".studio-editor-toolbar"),
+    /background:\s*var\(--canvas-toolbar\)/
+  );
+  assert.match(
+    block(".studio-emotions"),
+    /background:\s*var\(--canvas-toolbar\)/
+  );
+});
+
+test("textarea chữ sáng trên nền tối, placeholder đủ tương phản", () => {
+  const ta = block(".studio-textarea");
+  assert.match(ta, /color:\s*var\(--canvas-foreground\)/);
+  const ph = block(".studio-textarea::placeholder");
+  assert.match(ph, /color:\s*var\(--canvas-muted\)/);
+  assert.doesNotMatch(
+    ph,
+    /--muted-foreground/,
+    "placeholder phải dùng --canvas-muted"
+  );
+});
+
+test("TextEditor đánh dấu vùng canvas bằng class studio-canvas", () => {
+  const src = fs.readFileSync(
+    path.join(__dirname, "../src/features/tts/components/TextEditor.tsx"),
+    "utf8"
+  );
+  assert.match(src, /studio-canvas/);
+});
+
+test("không bề mặt nào trong vùng canvas dùng nhầm màu chrome", () => {
+  for (const selector of [
+    ".studio-text-editor",
+    ".studio-editor-toolbar",
+    ".studio-editor-heading h2",
+    ".studio-editor-stats",
+    ".studio-emotions",
+    ".studio-textarea",
+  ]) {
+    const body = block(selector);
+    assert.doesNotMatch(
+      body,
+      /var\(--card\)|var\(--foreground\)|var\(--secondary\)|var\(--muted-foreground\)/,
+      `${selector} dùng màu chrome, sẽ lọt nền sáng vào giữa vùng canvas tối`
+    );
+  }
+});

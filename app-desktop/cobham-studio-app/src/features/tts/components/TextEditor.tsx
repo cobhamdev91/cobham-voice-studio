@@ -147,7 +147,7 @@ export const TextEditor: React.FC<TextEditorProps> = ({
   };
 
   return (
-    <div className="studio-text-editor">
+    <div className="studio-text-editor studio-canvas">
       <div className="studio-editor-heading">
         <h2>Đọc văn bản</h2>
         <span className="studio-editor-stats">
