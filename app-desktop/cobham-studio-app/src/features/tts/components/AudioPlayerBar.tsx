@@ -276,7 +276,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
             className={`flex flex-1 select-none items-center justify-center gap-2 rounded-lg px-4 py-2 font-bold text-xs shadow-xs transition-all active:scale-95 sm:text-sm md:flex-none ${
               isBusy
                 ? "animate-pulse bg-rose-500 text-white shadow-rose-500/20 hover:bg-rose-600"
-                : "bg-gradient-to-r from-brand-500 to-teal-600 text-white shadow-brand-500/25 hover:from-brand-600 hover:to-teal-700"
+                : "bg-gradient-to-r from-brand-500 to-brand-700 text-white shadow-brand-500/25 hover:from-brand-600 hover:to-brand-800"
             } ${disabled && !isBusy ? "cursor-not-allowed opacity-50" : ""}`}
             disabled={disabled && !isBusy}
             onClick={isBusy ? onStop : onGenerateOrPlay}
@@ -301,7 +301,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
             className={`flex shrink-0 cursor-pointer select-none items-center gap-1.5 rounded-lg border px-2 py-1.5 font-semibold text-xs transition-colors ${
               subtitlesEnabled
                 ? "border-violet-500/60 bg-violet-500/10 text-violet-700 dark:text-violet-300"
-                : "border-border text-muted-foreground hover:text-foreground"
+                : "border-[var(--canvas-border)] text-[var(--canvas-muted)] hover:text-[var(--canvas-foreground)]"
             } ${isBusy ? "cursor-not-allowed opacity-50" : ""}`}
             title="Tạo kèm phụ đề .srt (mốc thời gian theo từng câu) để dùng khi dựng video"
           >
@@ -322,7 +322,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
             className={`flex shrink-0 cursor-pointer select-none items-center gap-1.5 rounded-lg border px-2 py-1.5 font-semibold text-xs transition-colors ${
               stableEnabled
                 ? "border-sky-500/60 bg-sky-500/10 text-sky-700 dark:text-sky-300"
-                : "border-border text-muted-foreground hover:text-foreground"
+                : "border-[var(--canvas-border)] text-[var(--canvas-muted)] hover:text-[var(--canvas-foreground)]"
             } ${isBusy ? "cursor-not-allowed opacity-50" : ""}`}
             title="Giữ ổn định: cùng văn bản và cùng giọng thì mỗi lần tạo ra giống hệt nhau. Tắt để mỗi lần có ngữ điệu khác."
           >
@@ -349,10 +349,10 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
                     ? "animate-pulse bg-brand-500"
                     : audioBlobUrl
                       ? "bg-brand-500"
-                      : "bg-slate-400"
+                      : "bg-[var(--canvas-muted)]"
               }`}
             />
-            <span className="font-semibold text-foreground text-xs capitalize sm:text-sm">
+            <span className="font-semibold text-[var(--canvas-foreground)] text-xs capitalize sm:text-sm">
               {isGenerating
                 ? "Đang tạo giọng nói..."
                 : isPlaying
@@ -363,7 +363,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
             </span>
           </div>
 
-          <span className="text-[12px] text-muted-foreground tabular-nums">
+          <span className="text-[12px] text-[var(--canvas-muted)] tabular-nums">
             {selectedVoiceName} ·{" "}
             {playbackSpeed.toLocaleString("vi-VN", {
               minimumFractionDigits: 2,
@@ -371,7 +371,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
             × · WAV / MP3
           </span>
           {!isGenerating && ttfaMs !== null && (
-            <div className="mt-0.5 flex items-center gap-1 font-mono font-semibold text-brand-600 text-xs dark:text-brand-400">
+            <div className="mt-0.5 flex items-center gap-1 font-mono font-semibold text-[var(--canvas-accent)] text-xs">
               <Zap className="h-3 w-3 fill-brand-500" />
               <span>
                 Tạo xong:{" "}
@@ -389,10 +389,10 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
         {isGenerating && (
           <div className="w-full max-w-lg space-y-2">
             <div className="flex items-center justify-between gap-3 text-xs">
-              <span className="font-medium text-muted-foreground">
+              <span className="font-medium text-[var(--canvas-muted)]">
                 Tiến trình ước tính
               </span>
-              <span className="font-bold font-mono text-brand-600 tabular-nums dark:text-brand-400">
+              <span className="font-bold font-mono text-[var(--canvas-accent)] tabular-nums">
                 {progressPercent}%
               </span>
             </div>
@@ -402,15 +402,15 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
               aria-valuemin={0}
               aria-valuenow={progressPercent}
               aria-valuetext={`Ước tính ${progressPercent} phần trăm`}
-              className="h-3 w-full overflow-hidden rounded-full bg-brand-100 dark:bg-brand-950"
+              className="h-3 w-full overflow-hidden rounded-full bg-[var(--canvas-border)]"
               role="progressbar"
             >
               <div
-                className="h-full min-w-1 rounded-full bg-gradient-to-r from-brand-500 via-teal-500 to-cyan-500 transition-[width] duration-300 ease-out motion-reduce:transition-none"
+                className="h-full min-w-1 rounded-full bg-gradient-to-r from-brand-500 via-brand-400 to-brand-300 transition-[width] duration-300 ease-out motion-reduce:transition-none"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
-            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[12px] text-muted-foreground">
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[12px] text-[var(--canvas-muted)]">
               <span>
                 {progressPercent >= 95
                   ? "Vẫn đang xử lý, vui lòng chờ..."
@@ -431,10 +431,10 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
 
         {/* Thanh tua khi đã có âm thanh */}
         {!isGenerating && audioBlobUrl && duration > 0 && (
-          <div className="flex w-full max-w-full items-center gap-2 font-mono text-[12px] text-muted-foreground">
+          <div className="flex w-full max-w-full items-center gap-2 font-mono text-[12px] text-[var(--canvas-muted)]">
             <span>{formatTime(currentTime)}</span>
             <input
-              className="h-1 flex-1 cursor-pointer appearance-none rounded-lg bg-secondary accent-brand-500"
+              className="h-1 flex-1 cursor-pointer appearance-none rounded-lg bg-[var(--canvas-border)] accent-[var(--canvas-accent)]"
               max={duration}
               min={0}
               onChange={(e) => handleSeek(Number.parseFloat(e.target.value))}
@@ -457,8 +457,8 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
             <button
               className={`flex items-center gap-1 rounded-xl border px-3 py-2 font-semibold text-xs transition-all ${
                 downloadable
-                  ? "bg-secondary text-foreground shadow-sm hover:border-brand-500/50 hover:bg-brand-500/10 active:scale-95"
-                  : "cursor-not-allowed border-transparent bg-muted text-muted-foreground opacity-40"
+                  ? "bg-[var(--canvas-border)] text-[var(--canvas-foreground)] shadow-sm hover:border-brand-500/50 hover:bg-brand-500/10 active:scale-95"
+                  : "cursor-not-allowed border-transparent bg-[var(--canvas-border)] text-[var(--canvas-muted)] opacity-40"
               }`}
               disabled={!downloadable}
               onClick={onDownload}
@@ -475,8 +475,8 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
               <button
                 className={`flex items-center gap-1 rounded-xl border px-3 py-2 font-semibold text-xs transition-all ${
                   downloadable
-                    ? "bg-secondary text-foreground shadow-sm hover:border-cyan-500/50 hover:bg-cyan-500/10 active:scale-95"
-                    : "cursor-not-allowed border-transparent bg-muted text-muted-foreground opacity-40"
+                    ? "bg-[var(--canvas-border)] text-[var(--canvas-foreground)] shadow-sm hover:border-cyan-500/50 hover:bg-cyan-500/10 active:scale-95"
+                    : "cursor-not-allowed border-transparent bg-[var(--canvas-border)] text-[var(--canvas-muted)] opacity-40"
                 }`}
                 disabled={!downloadable}
                 onClick={onDownloadMp3}
@@ -494,7 +494,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
             {/* Tải SRT */}
             {onDownloadSrt && (
               <button
-                className="flex items-center gap-1 rounded-xl border bg-secondary px-3 py-2 font-semibold text-foreground text-xs shadow-sm transition-all hover:border-violet-500/50 hover:bg-violet-500/10 active:scale-95"
+                className="flex items-center gap-1 rounded-xl border bg-[var(--canvas-border)] px-3 py-2 font-semibold text-[var(--canvas-foreground)] text-xs shadow-sm transition-all hover:border-violet-500/50 hover:bg-violet-500/10 active:scale-95"
                 onClick={onDownloadSrt}
                 title="Tải phụ đề .srt (cùng tên với file audio)"
                 type="button"
@@ -509,7 +509,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
         {/* Thanh âm lượng */}
         <div className="flex items-center gap-1.5 border-border/60 border-l pl-2">
           <button
-            className="rounded-lg p-1.5 text-muted-foreground transition-colors hover:text-foreground"
+            className="rounded-lg p-1.5 text-[var(--canvas-muted)] transition-colors hover:text-[var(--canvas-foreground)]"
             onClick={() => onChangeVolume(volume === 0 ? 1 : 0)}
             title="Bật/Tắt âm thanh"
             type="button"
@@ -521,7 +521,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
             )}
           </button>
           <input
-            className="h-1.5 w-14 cursor-pointer appearance-none rounded-lg bg-secondary accent-brand-500"
+            className="h-1.5 w-14 cursor-pointer appearance-none rounded-lg bg-[var(--canvas-border)] accent-[var(--canvas-accent)]"
             max="1"
             min="0"
             onChange={(e) => onChangeVolume(Number.parseFloat(e.target.value))}

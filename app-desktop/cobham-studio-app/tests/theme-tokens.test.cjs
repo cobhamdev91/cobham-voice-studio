@@ -149,3 +149,16 @@ test("không bề mặt nào trong vùng canvas dùng nhầm màu chrome", () =>
     );
   }
 });
+
+test("player là bề mặt riêng, nền canvas-toolbar, không trong suốt", () => {
+  const player = block(".studio-player");
+  assert.match(player, /background:\s*var\(--canvas-toolbar\)/);
+  assert.match(player, /border:\s*1px solid var\(--canvas-border\)/);
+  assert.match(player, /border-radius:\s*10px/);
+});
+
+test("player trong layout TTS không bị gỡ nền nữa", () => {
+  const inTts = block(".studio-workspace-tts .studio-player");
+  assert.doesNotMatch(inTts, /background:\s*transparent/);
+  assert.doesNotMatch(inTts, /border:\s*0/);
+});
