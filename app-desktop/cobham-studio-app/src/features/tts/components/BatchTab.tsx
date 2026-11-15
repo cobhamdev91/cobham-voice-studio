@@ -1,13 +1,11 @@
 import {
   AlertCircle,
   CheckCircle2,
-  Download,
   FileArchive,
   FileDown,
   FileUp,
   Layers,
   ListOrdered,
-  Loader2,
   Play,
   RotateCcw,
   Square,
@@ -16,33 +14,21 @@ import {
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { synthesizeSpeech, synthesizeSpeechWithSubtitles } from "../api";
 import { downloadBlobAsFile } from "../audio-engine";
-import { batchFileName, parseBatchScript } from "../batch-parse";
-import { srtBlob } from "../history";
+import { parseBatchScript } from "../batch-parse";
+import type { BatchFormat } from "../batch-queue";
+import { useBatchQueue } from "../hooks/useBatchQueue";
 import { LanguageSelect, useModelCaps } from "../model-caps";
 import { readTextFile } from "../read-text-file";
 import type { VoiceOption } from "../types";
 import { groupVoices, voiceOptionLabel } from "../voice-label";
-import { createZip } from "../zip";
+import { BatchItemRow } from "./BatchItemRow";
 
 /** Props cho tab tạo giọng nói hàng loạt theo từng đoạn đánh dấu `[P1]`, `[P2]`... */
 interface BatchTabProps {
   apiUrl: string;
   defaultVoiceId: string;
   voices: VoiceOption[];
-}
-
-type Format = "wav" | "mp3";
-
-interface ItemResult {
-  blob?: Blob;
-  duration?: number;
-  error?: string;
-  /** Phu de SRT (khi bat "Kem phu de"). */
-  srt?: string;
-  status: "running" | "done" | "error";
-  url?: string;
 }
 
 const SAMPLE = `[P1]
@@ -66,98 +52,6 @@ Thank you for listening. <laugh>`;
 
 const errorText = (e: unknown) => (e instanceof Error ? e.message : String(e));
 
-function timestamp(): string {
-  const d = new Date();
-  const p = (n: number) => String(n).padStart(2, "0");
-  return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}`;
-}
-
-interface BatchRowProps {
-  fileName: string;
-  index: number;
-  label: string;
-  onDownload: () => void;
-  result?: ItemResult;
-  text: string;
-}
-
-function StatusBadge({ result }: { result?: ItemResult }) {
-  if (!result) {
-    return <span className="text-muted-foreground">Chờ tạo</span>;
-  }
-  if (result.status === "running") {
-    return (
-      <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400">
-        <Loader2 className="h-3.5 w-3.5 animate-spin" /> Đang tạo...
-      </span>
-    );
-  }
-  if (result.status === "error") {
-    return (
-      <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400">
-        <AlertCircle className="h-3.5 w-3.5" /> Lỗi
-      </span>
-    );
-  }
-  return (
-    <span className="flex items-center gap-1 text-brand-600 dark:text-brand-400">
-      <CheckCircle2 className="h-3.5 w-3.5" />
-      {result.duration ? `${result.duration.toFixed(1)}s` : "Xong"}
-    </span>
-  );
-}
-
-function BatchRow({
-  index,
-  label,
-  text,
-  fileName,
-  result,
-  onDownload,
-}: BatchRowProps) {
-  return (
-    <div className="space-y-1.5 rounded-xl border border-border/70 bg-secondary/20 p-3">
-      <div className="flex items-center gap-2 text-xs">
-        <span className="rounded-md bg-brand-500/15 px-1.5 py-0.5 font-bold font-mono text-brand-700 dark:text-brand-300">
-          {label}
-        </span>
-        <span className="min-w-0 flex-1 truncate font-mono text-[12px] text-muted-foreground">
-          {index + 1}. {fileName}
-        </span>
-        <StatusBadge result={result} />
-        {result?.status === "done" && (
-          <button
-            aria-label={`Tải ${fileName}`}
-            className="rounded-lg p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"
-            onClick={onDownload}
-            title="Tải file này"
-            type="button"
-          >
-            <Download className="h-3.5 w-3.5" />
-          </button>
-        )}
-      </div>
-      <p className="line-clamp-2 whitespace-pre-line text-foreground/90 text-xs">
-        {text}
-      </p>
-      {result?.status === "error" && (
-        <p className="text-[12px] text-rose-600 dark:text-rose-400">
-          {result.error}
-        </p>
-      )}
-      {result?.url && (
-        // biome-ignore lint/a11y/useMediaCaption: audio TTS do nguoi dung tu tao, chu da nam ngay tren
-        <audio
-          className="h-8 w-full"
-          controls
-          preload="none"
-          src={result.url}
-        />
-      )}
-    </div>
-  );
-}
-
 /** Tab xử lý hàng loạt đoạn văn bản theo mốc `[P1]`, `[P2]` và đóng gói tải về `.zip`. */
 export const BatchTab: React.FC<BatchTabProps> = ({
   apiUrl,
@@ -167,19 +61,10 @@ export const BatchTab: React.FC<BatchTabProps> = ({
   const sample = useModelCaps().languages.length > 0 ? SAMPLE_FOREIGN : SAMPLE;
   const [script, setScript] = useState("");
   const [voiceId, setVoiceId] = useState(defaultVoiceId);
-  const [format, setFormat] = useState<Format>("wav");
+  const [format, setFormat] = useState<BatchFormat>("wav");
   const [speed, setSpeed] = useState(1);
   const [withSubtitles, setWithSubtitles] = useState(false);
-  const [results, setResults] = useState<Record<number, ItemResult>>({});
-  const [running, setRunning] = useState(false);
-  const [notice, setNotice] = useState<{
-    text: string;
-    error?: boolean;
-  } | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  // Giu URL de thu hoi khi xoa ket qua / roi tab (tranh ro bo nho blob).
-  const urlsRef = useRef<string[]>([]);
 
   // Chua co giong, hoac giong dang chon vua bi xoa -> ve giong mac dinh.
   useEffect(() => {
@@ -188,30 +73,31 @@ export const BatchTab: React.FC<BatchTabProps> = ({
     }
   }, [defaultVoiceId, voiceId, voices]);
 
-  useEffect(
-    () => () => {
-      abortRef.current?.abort();
-      for (const u of urlsRef.current) {
-        URL.revokeObjectURL(u);
-      }
-    },
-    []
-  );
-
   const parsed = useMemo(() => parseBatchScript(script), [script]);
   const items = parsed.items;
-  const doneCount = Object.values(results).filter(
-    (r) => r.status === "done"
-  ).length;
-  const hasResults = Object.keys(results).length > 0;
-
-  const clearResults = () => {
-    for (const u of urlsRef.current) {
-      URL.revokeObjectURL(u);
-    }
-    urlsRef.current = [];
-    setResults({});
-  };
+  const {
+    clearResults,
+    doneCount,
+    fileNameOf,
+    generateLabel,
+    handleDownloadOne,
+    handleDownloadZip,
+    handleGenerate,
+    handleStop,
+    hasResults,
+    notice,
+    pendingCount,
+    results,
+    running,
+    setNotice,
+  } = useBatchQueue({
+    apiUrl,
+    items,
+    voiceId,
+    speed,
+    format,
+    withSubtitles,
+  });
 
   // Sua van ban sau khi da tao -> ket qua cu khong con khop thu tu/noi dung.
   const updateScript = (value: string) => {
@@ -258,136 +144,6 @@ export const BatchTab: React.FC<BatchTabProps> = ({
       "mau-tao-hang-loat.txt"
     );
   };
-
-  const generateOne = async (i: number, signal: AbortSignal) => {
-    setResults((r) => ({ ...r, [i]: { status: "running" } }));
-    try {
-      const params = { text: items[i].text, voiceId, speed, format };
-      let srt: string | undefined;
-      let res: Awaited<ReturnType<typeof synthesizeSpeech>>;
-      if (withSubtitles) {
-        const r = await synthesizeSpeechWithSubtitles(apiUrl, params, signal);
-        res = r;
-        srt = r.srt;
-      } else {
-        res = await synthesizeSpeech(apiUrl, params, signal);
-      }
-      const url = URL.createObjectURL(res.blob);
-      urlsRef.current.push(url);
-      setResults((r) => ({
-        ...r,
-        [i]: {
-          status: "done",
-          blob: res.blob,
-          url,
-          duration: res.durationSeconds,
-          srt,
-        },
-      }));
-      return true;
-    } catch (e) {
-      if (signal.aborted) {
-        setResults((r) => {
-          const next = { ...r };
-          delete next[i];
-          return next;
-        });
-        return false;
-      }
-      setResults((r) => ({
-        ...r,
-        [i]: { status: "error", error: errorText(e) },
-      }));
-      return true;
-    }
-  };
-
-  const handleGenerate = async () => {
-    const controller = new AbortController();
-    abortRef.current = controller;
-    setRunning(true);
-    setNotice(null);
-    // Muc da xong thi bo qua: bam lai = tiep tuc sau khi dung / tao lai muc loi.
-    const todo = items
-      .map((_, i) => i)
-      .filter((i) => results[i]?.status !== "done");
-    for (const i of todo) {
-      if (controller.signal.aborted) {
-        break;
-      }
-      await generateOne(i, controller.signal);
-    }
-    setRunning(false);
-    abortRef.current = null;
-    setNotice(
-      controller.signal.aborted
-        ? { text: 'Đã dừng. Bấm "Tiếp tục" để tạo các mục còn lại.' }
-        : { text: "Đã tạo xong. Tải từng file hoặc tải tất cả (.zip)." }
-    );
-  };
-
-  const fileNameOf = (i: number) =>
-    batchFileName(i, items.length, items[i].label, format);
-
-  // Phu de trung ten voi audio (001-P1.wav <-> 001-P1.srt) de phan mem dung video tu ghep.
-  const srtNameOf = (i: number) =>
-    batchFileName(i, items.length, items[i].label, "srt");
-
-  const handleDownloadOne = (i: number) => {
-    const blob = results[i]?.blob;
-    if (blob) {
-      downloadBlobAsFile(blob, fileNameOf(i));
-    }
-    const srt = results[i]?.srt;
-    if (srt) {
-      downloadBlobAsFile(srtBlob(srt), srtNameOf(i));
-    }
-  };
-
-  const handleDownloadZip = async () => {
-    const entries = await Promise.all(
-      items.map(async (_, i) => {
-        const blob =
-          results[i]?.status === "done" ? results[i].blob : undefined;
-        return blob
-          ? {
-              name: fileNameOf(i),
-              data: new Uint8Array(await blob.arrayBuffer()),
-            }
-          : null;
-      })
-    );
-    const files = entries.filter((e) => e !== null);
-    if (files.length === 0) {
-      return;
-    }
-    const encoder = new TextEncoder();
-    const subtitleFiles = items.flatMap((_, i) => {
-      const srt = results[i]?.status === "done" ? results[i].srt : undefined;
-      return srt
-        ? [{ name: srtNameOf(i), data: encoder.encode(`\uFEFF${srt}`) }]
-        : [];
-    });
-    files.push(...subtitleFiles);
-    const ok = await downloadBlobAsFile(
-      createZip(files),
-      `tao-hang-loat-${timestamp()}.zip`
-    );
-    if (ok) {
-      const audioCount = files.length - subtitleFiles.length;
-      setNotice({
-        text: subtitleFiles.length
-          ? `Đã lưu file zip gồm ${audioCount} audio và ${subtitleFiles.length} phụ đề.`
-          : `Đã lưu file zip gồm ${audioCount} audio.`,
-      });
-    }
-  };
-
-  const pendingCount = items.length - doneCount;
-  let generateLabel = `Tạo ${items.length} file`;
-  if (hasResults && pendingCount > 0) {
-    generateLabel = `Tiếp tục (${pendingCount} mục)`;
-  }
 
   return (
     <div className="studio-tab-grid studio-batch-layout fade-in-50 animate-in duration-300">
@@ -510,7 +266,7 @@ export const BatchTab: React.FC<BatchTabProps> = ({
               <select
                 className="w-full rounded-lg border border-border/80 bg-background px-2.5 py-1.5 outline-none focus:border-brand-500"
                 disabled={running || hasResults}
-                onChange={(e) => setFormat(e.target.value as Format)}
+                onChange={(e) => setFormat(e.target.value as BatchFormat)}
                 title={hasResults ? "Xoá kết quả để đổi định dạng" : undefined}
                 value={format}
               >
@@ -561,7 +317,7 @@ export const BatchTab: React.FC<BatchTabProps> = ({
             {running ? (
               <button
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-rose-500 px-4 py-2.5 font-semibold text-sm text-white shadow-md transition-all hover:bg-rose-600 active:scale-95"
-                onClick={() => abortRef.current?.abort()}
+                onClick={handleStop}
                 type="button"
               >
                 <Square className="h-4 w-4" /> Dừng ({doneCount}/{items.length})
@@ -642,7 +398,7 @@ export const BatchTab: React.FC<BatchTabProps> = ({
               </p>
             )}
             {items.map((item, i) => (
-              <BatchRow
+              <BatchItemRow
                 fileName={fileNameOf(i)}
                 index={i}
                 // biome-ignore lint/suspicious/noArrayIndexKey: thu tu muc chinh la dinh danh (ket qua gan theo chi so)
