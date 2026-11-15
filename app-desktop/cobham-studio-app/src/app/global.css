@@ -311,7 +311,11 @@
   width: 30px;
   height: 30px;
   color: #fff;
-  background: linear-gradient(135deg, var(--color-brand-600), var(--color-brand-800));
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-600),
+    var(--color-brand-800)
+  );
   border-radius: 6px;
 }
 .studio-model {
@@ -598,6 +602,7 @@
   margin: 20px auto 0;
 }
 .studio-properties {
+  --studio-section-divider: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   grid-area: properties;
@@ -606,7 +611,6 @@
   padding: 16px;
   background: var(--card);
   border-left: 1px solid var(--border);
-  --studio-section-divider: 1px solid var(--border);
 }
 .studio-properties > * {
   flex-shrink: 0;
@@ -657,8 +661,8 @@
 .studio-editor-heading h2 {
   font-size: 22px;
   font-weight: 700;
-  letter-spacing: -0.025em;
   color: var(--canvas-foreground);
+  letter-spacing: -0.025em;
 }
 .studio-editor-stats {
   font-size: 13px;
@@ -700,9 +704,6 @@
   padding: 0;
   background: transparent;
   border: 0;
-}
-.studio-emotions > div > div:first-child {
-  color: var(--canvas-muted);
 }
 .studio-emotions code {
   display: none;
@@ -2121,4 +2122,8 @@
   padding-top: 14px;
   margin-top: 18px;
   border-top: 1px solid var(--border);
+}
+
+.studio-emotions > div > div:first-child {
+  color: var(--canvas-muted);
 }

@@ -22,9 +22,13 @@ function allBlocks(selector) {
   let from = 0;
   for (;;) {
     const start = css.indexOf(`${selector} {`, from);
-    if (start === -1) break;
+    if (start === -1) {
+      break;
+    }
     const end = css.indexOf("\n}", start);
-    if (end === -1) break;
+    if (end === -1) {
+      break;
+    }
     out.push(css.slice(start, end));
     from = end + 1;
   }
@@ -59,11 +63,15 @@ test("canvas là nền tối với chữ sáng, tương phản >= 10:1", () => {
   const bg = value(":root", "--canvas");
   const fg = value(":root", "--canvas-foreground");
   assert.match(bg, /^#[0-9a-f]{6}$/i, "--canvas phải là hex 6 ký tự");
-  assert.match(fg, /^#[0-9a-f]{6}$/i, "--canvas-foreground phải là hex 6 ký tự");
+  assert.match(
+    fg,
+    /^#[0-9a-f]{6}$/i,
+    "--canvas-foreground phải là hex 6 ký tự"
+  );
   const lum = (hex) => {
     const [r, g, b] = [1, 3, 5]
-      .map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
-      .map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+      .map((i) => Number.parseInt(hex.slice(i, i + 2), 16) / 255)
+      .map((c) => (c <= 0.039_28 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   };
   const [l1, l2] = [lum(bg), lum(fg)].sort((a, b) => b - a);
@@ -102,11 +110,7 @@ test("bootstrap nền canvas, không dùng nền sáng", () => {
     "bootstrap phải nền canvas #14161d"
   );
   assert.match(html, /<title>Cobham Studio<\/title>/);
-  assert.doesNotMatch(
-    html,
-    /#f3f8f8|#e1f6f1/,
-    "còn nền sáng cũ của bản gốc"
-  );
+  assert.doesNotMatch(html, /#f3f8f8|#e1f6f1/, "còn nền sáng cũ của bản gốc");
 });
 
 test("editor dùng nền canvas, chữ canvas, bo góc 10px", () => {
@@ -219,13 +223,25 @@ test("logo bo góc 6px, dùng indigo", () => {
 });
 
 test("màu chip cảm xúc theo ngữ cảnh nền, không phụ thuộc theme", () => {
-  for (const name of ["--emotion-sky", "--emotion-emerald", "--emotion-amber", "--emotion-purple", "--emotion-slate"]) {
+  for (const name of [
+    "--emotion-sky",
+    "--emotion-emerald",
+    "--emotion-amber",
+    "--emotion-purple",
+    "--emotion-slate",
+  ]) {
     assert.ok(css.includes(`${name}:`), `thiếu biến ${name}`);
   }
   const canvas = block(".studio-canvas");
   assert.match(canvas, /--emotion-sky:/);
   assert.match(canvas, /--emotion-amber:/);
-  for (const name of ["--emotion-sky", "--emotion-emerald", "--emotion-amber", "--emotion-purple", "--emotion-slate"]) {
+  for (const name of [
+    "--emotion-sky",
+    "--emotion-emerald",
+    "--emotion-amber",
+    "--emotion-purple",
+    "--emotion-slate",
+  ]) {
     assert.match(block(".dark"), new RegExp(`${name}:`), `.dark thiếu ${name}`);
   }
 });
@@ -235,7 +251,10 @@ test("EmotionBar không dùng cặp màu dark: cho chip", () => {
     path.join(__dirname, "../src/features/tts/components/EmotionBar.tsx"),
     "utf8"
   );
-  assert.doesNotMatch(src, /text-(sky|emerald|amber|purple|slate)-\d{3}\s+dark:/);
+  assert.doesNotMatch(
+    src,
+    /text-(sky|emerald|amber|purple|slate)-\d{3}\s+dark:/
+  );
   assert.match(src, /--emotion-/);
 });
 
@@ -247,21 +266,33 @@ test("không còn màu bề mặt hardcode ngoài khối code tối có chủ đ
   const walk = (dir) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) walk(full);
-      else if (/\.(tsx|ts)$/.test(entry.name)) files.push(full);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else if (/\.(tsx|ts)$/.test(entry.name)) {
+        files.push(full);
+      }
     }
   };
   walk(SRC);
   const offenders = [];
   for (const file of files) {
     const src = fs.readFileSync(file, "utf8");
-    const hits = src.match(/\b(?:bg|text|border)-(?:white|black|slate|gray|zinc|neutral|stone)-\d{0,3}\b/g) ?? [];
+    const hits =
+      src.match(
+        /\b(?:bg|text|border)-(?:white|black|slate|gray|zinc|neutral|stone)-\d{0,3}\b/g
+      ) ?? [];
     const real = hits.filter((h) => !allowed.includes(h));
     if (real.length > 0) {
-      offenders.push(`${path.relative(SRC, file)}: ${[...new Set(real)].join(", ")}`);
+      offenders.push(
+        `${path.relative(SRC, file)}: ${[...new Set(real)].join(", ")}`
+      );
     }
   }
-  assert.deepEqual(offenders, [], `còn màu bề mặt hardcode:\n${offenders.join("\n")}`);
+  assert.deepEqual(
+    offenders,
+    [],
+    `còn màu bề mặt hardcode:\n${offenders.join("\n")}`
+  );
 });
 
 test("không còn gradient teal cũ", () => {
@@ -269,8 +300,11 @@ test("không còn gradient teal cũ", () => {
   const walk = (dir) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) walk(full);
-      else if (/\.(tsx|ts)$/.test(entry.name)) files.push(full);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else if (/\.(tsx|ts)$/.test(entry.name)) {
+        files.push(full);
+      }
     }
   };
   walk(SRC);

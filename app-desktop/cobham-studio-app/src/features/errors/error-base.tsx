@@ -50,7 +50,12 @@ export function ErrorDescription({
   className?: string;
 }) {
   return (
-    <p className={cn("mt-6 text-base text-muted-foreground leading-7", className)}>
+    <p
+      className={cn(
+        "mt-6 text-base text-muted-foreground leading-7",
+        className
+      )}
+    >
       {children}
     </p>
   );
