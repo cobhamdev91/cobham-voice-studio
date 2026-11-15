@@ -5,12 +5,27 @@
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cobham Studio</title>
+    <script>
+    "use strict";
+    try {
+      const saved = localStorage.getItem("cobham_studio_theme");
+      if (
+        saved === "dark" ||
+        (saved !== "light" &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches)
+      ) {
+        document.documentElement.classList.add("dark");
+      }
+    } catch {
+      /* Bỏ qua nếu môi trường chặn đọc localStorage. */
+    }
+    </script>
     <style>
     html,
     body {
       min-height: 100%;
       margin: 0;
-      background: #14161d;
+      background: #eceef1;
     }
     #bootstrap-screen {
       position: fixed;
@@ -21,8 +36,8 @@
       place-items: center;
       padding: 24px;
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-      color: #e8eaf0;
-      background: #14161d;
+      color: #14161a;
+      background: #eceef1;
     }
     .bootstrap-content {
       width: min(100%, 360px);
@@ -37,7 +52,7 @@
       color: white;
       background: linear-gradient(135deg, #6366f1, #4f46e5);
       border-radius: 19px;
-      box-shadow: 0 14px 30px rgba(5, 150, 105, 0.22);
+      box-shadow: 0 14px 30px rgba(79, 70, 229, 0.24);
     }
     .bootstrap-title {
       margin: 0;
@@ -48,25 +63,25 @@
     .bootstrap-subtitle {
       margin: 8px 0 25px;
       font-size: 14px;
-      color: #98a0b2;
+      color: #5b6270;
     }
     .bootstrap-track {
       height: 4px;
       overflow: hidden;
-      background: #262a36;
+      background: #dde0e6;
       border-radius: 99px;
     }
     .bootstrap-progress {
       width: 36%;
       height: 100%;
-      background: #818cf8;
+      background: #4f46e5;
       border-radius: inherit;
       animation: bootstrap-move 1.5s ease-in-out infinite alternate;
     }
     .bootstrap-status {
       margin: 12px 0 0;
       font-size: 12px;
-      color: #98a0b2;
+      color: #5b6270;
     }
     .bootstrap-retry {
       padding: 9px 16px;
@@ -75,7 +90,7 @@
       font-size: 13px;
       color: white;
       cursor: pointer;
-      background: #6366f1;
+      background: #4f46e5;
       border: 0;
       border-radius: 10px;
     }
@@ -87,7 +102,27 @@
         transform: translateX(178%);
       }
     }
-    /* Canvas luôn tối nên không cần override theo prefers-color-scheme. */
+    html.dark,
+    html.dark body {
+      background: #14161d;
+    }
+    html.dark #bootstrap-screen {
+      color: #e8eaf0;
+      background: #14161d;
+    }
+    html.dark .bootstrap-subtitle,
+    html.dark .bootstrap-status {
+      color: #98a0b2;
+    }
+    html.dark .bootstrap-track {
+      background: #262a36;
+    }
+    html.dark .bootstrap-progress {
+      background: #818cf8;
+    }
+    html.dark .bootstrap-retry {
+      background: #6366f1;
+    }
     @media (prefers-reduced-motion: reduce) {
       .bootstrap-progress {
         width: 100%;
@@ -111,6 +146,7 @@
             stroke-linecap="round"
             stroke-linejoin="round"
           >
+            <title>Cobham Studio</title>
             <path d="M11 5 6 9H3v6h3l5 4V5Z" />
             <path d="M15.5 8.5a5 5 0 0 1 0 7" />
             <path d="M19 5a10 10 0 0 1 0 14" />

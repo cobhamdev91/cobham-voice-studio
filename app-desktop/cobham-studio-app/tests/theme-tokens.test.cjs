@@ -111,14 +111,27 @@ test("thang brand là indigo, không còn teal", () => {
 const HTML_PATH = path.join(__dirname, "../index.html");
 const html = fs.readFileSync(HTML_PATH, "utf8");
 
-test("bootstrap nền canvas, không dùng nền sáng", () => {
+test("bootstrap đồng bộ light/dark và dùng indigo, không còn màu cũ", () => {
+  assert.match(
+    html,
+    /background:\s*#eceef1/,
+    "bootstrap sáng phải dùng #eceef1"
+  );
   assert.match(
     html,
     /background:\s*#14161d/,
-    "bootstrap phải nền canvas #14161d"
+    "bootstrap tối phải dùng #14161d"
   );
-  assert.match(html, /<title>Cobham Studio<\/title>/);
-  assert.doesNotMatch(html, /#f3f8f8|#e1f6f1/, "còn nền sáng cũ của bản gốc");
+  assert.match(html, /cobham_studio_theme/, "bootstrap phải đọc theme đã lưu");
+  assert.match(
+    html,
+    /<svg[\s\S]*?<title>Cobham Studio<\/title>[\s\S]*?<\/svg>/
+  );
+  assert.doesNotMatch(
+    html,
+    /#f3f8f8|#e1f6f1|rgba\(5,\s*150,\s*105/,
+    "còn màu cũ của bản gốc"
+  );
 });
 
 test("editor dùng nền canvas, chữ canvas, bo góc 10px", () => {
