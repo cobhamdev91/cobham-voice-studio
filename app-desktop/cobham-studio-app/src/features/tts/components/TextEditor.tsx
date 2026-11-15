@@ -23,6 +23,7 @@ const TOOLBAR_BUTTON_CLASS =
   "flex items-center gap-1 rounded-md px-2 py-1 font-medium text-xs transition-colors disabled:opacity-50";
 const TOOLBAR_NEUTRAL_CLASS = `${TOOLBAR_BUTTON_CLASS} text-[var(--canvas-muted)] hover:bg-[var(--canvas)] hover:text-[var(--canvas-foreground)]`;
 
+/** Props cho khung soạn thảo văn bản chính ở chế độ TTS Studio. */
 interface TextEditorProps {
   disabled?: boolean;
   onChange: (val: string) => void;
@@ -79,6 +80,7 @@ const PRESET_SAMPLES_FOREIGN = [
   },
 ];
 
+/** Khung soạn thảo văn bản đọc: đếm ký tự/từ/câu, làm sạch Markdown, chèn thẻ cảm xúc và mẫu văn bản. */
 export const TextEditor: React.FC<TextEditorProps> = ({
   text,
   onChange,

@@ -2,6 +2,7 @@ import { Laugh, Megaphone, Pause, Sparkles, Wind } from "lucide-react";
 import type React from "react";
 import { useModelCaps } from "../model-caps";
 
+/** Props cho thanh chèn nhanh thẻ cảm xúc và khoảng nghỉ vào văn bản. */
 interface EmotionBarProps {
   disabled?: boolean;
   onInsertTag: (tag: string) => void;
@@ -61,6 +62,7 @@ const SUPERTONIC_EMOTIONS: typeof EMOTIONS = [
 
 const PAUSE_TAG = "[nghỉ 1s]";
 
+/** Thanh nút chèn nhanh thẻ cảm xúc (`[cười]`, `[thở dài]`...) và thẻ nghỉ theo mô hình đang chọn. */
 export const EmotionBar: React.FC<EmotionBarProps> = ({
   onInsertTag,
   disabled,

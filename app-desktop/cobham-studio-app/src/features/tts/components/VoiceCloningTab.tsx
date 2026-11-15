@@ -30,6 +30,7 @@ import { EmotionBar } from "./EmotionBar";
 const errorText = (err: unknown, fallback: string) =>
   err instanceof Error && err.message ? err.message : fallback;
 
+/** Props cho tab nhân bản giọng nói từ đoạn ghi âm hoặc file mẫu cục bộ. */
 interface VoiceCloningTabProps {
   apiUrl: string;
   isActive: boolean;
@@ -45,6 +46,7 @@ interface VoiceCloningTabProps {
 const SOURCE_EXTENSIONS = [".mp3", ".wav", ".m4a"];
 const SOURCE_ACCEPT = `${SOURCE_EXTENSIONS.join(",")},audio/mpeg,audio/wav,audio/mp4`;
 const SOURCE_FORMATS = "MP3, WAV hoặc M4A";
+/** Tab nhân bản giọng đọc cá nhân hoá, lưu mô hình giọng cục bộ và đọc thử văn bản. */
 export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
   apiUrl,
   isActive,

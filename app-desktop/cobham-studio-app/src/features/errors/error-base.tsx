@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
+/** Khung hiển thị màn hình lỗi chung cho router/error boundary. */
 export function ErrorView({
   children,
   className,
@@ -23,6 +24,7 @@ export function ErrorView({
   );
 }
 
+/** Tiêu đề chính của màn hình lỗi. */
 export function ErrorHeader({
   children,
   className,
@@ -42,6 +44,7 @@ export function ErrorHeader({
   );
 }
 
+/** Đoạn mô tả chi tiết nguyên nhân hoặc hướng dẫn khôi phục lỗi. */
 export function ErrorDescription({
   children,
   className,
@@ -61,6 +64,7 @@ export function ErrorDescription({
   );
 }
 
+/** Khu vực chứa các nút hành động khôi phục ở cuối màn hình lỗi. */
 export function ErrorActions({
   children,
   className,

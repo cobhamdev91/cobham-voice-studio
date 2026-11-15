@@ -10,6 +10,7 @@ import type React from "react";
 import { Button } from "@/components/ui/button";
 import { APP_NAME } from "@/config/branding";
 
+/** Props cho màn hình khởi động khi nạp backend và mô hình giọng nói. */
 interface LoadingScreenProps {
   isDark: boolean;
   message: string;
@@ -18,6 +19,7 @@ interface LoadingScreenProps {
   status: "starting" | "downloading" | "ready" | "failed";
 }
 
+/** Màn hình chờ khởi động dịch vụ, nạp mô hình và xử lý thử kết nối lại khi lỗi. */
 export const LoadingScreen: React.FC<LoadingScreenProps> = ({
   status,
   message,

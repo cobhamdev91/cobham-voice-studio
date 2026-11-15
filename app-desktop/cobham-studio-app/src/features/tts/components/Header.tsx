@@ -1,7 +1,7 @@
 import { AudioLines, Moon, RefreshCw, Sun } from "lucide-react";
 import type React from "react";
-import type { ConnectionStatus } from "../types";
 import { APP_NAME } from "@/config/branding";
+import type { ConnectionStatus } from "../types";
 
 const GPU_ENGINE = /GPU|CUDA|pytorch/i;
 const CONNECTION_LABELS = {
@@ -16,6 +16,7 @@ const CONNECTION_COLORS = {
   disconnected: "bg-rose-500",
   error: "bg-rose-500",
 };
+/** Props cho thanh tiêu đề trên cùng của ứng dụng studio. */
 interface HeaderProps {
   engineName: string;
   isDark: boolean;
@@ -26,6 +27,7 @@ interface HeaderProps {
   status: ConnectionStatus;
 }
 
+/** Thanh tiêu đề ứng dụng: hiển thị thương hiệu, trạng thái mô hình/máy chủ và nút chuyển giao diện sáng/tối. */
 export const Header: React.FC<HeaderProps> = ({
   engineName,
   isDark,

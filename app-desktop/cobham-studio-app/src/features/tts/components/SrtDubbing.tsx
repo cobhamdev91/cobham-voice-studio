@@ -19,6 +19,7 @@ import { LanguageSelect } from "../model-caps";
 import type { HistoryEntry, VoiceOption } from "../types";
 import { groupVoices, voiceOptionLabel } from "../voice-label";
 
+/** Props cho khung lồng tiếng file phụ đề `.srt` theo đúng mốc thời gian từng câu. */
 interface SrtDubbingProps {
   apiUrl: string;
   cues: SrtCue[];
@@ -62,6 +63,7 @@ function describeStats(stats: DubStats): string {
 
 const errorText = (e: unknown) => (e instanceof Error ? e.message : String(e));
 
+/** Giao diện lồng tiếng phụ đề `.srt`, căn nhịp theo từng câu và lưu kết quả vào lịch sử. */
 export const SrtDubbing: React.FC<SrtDubbingProps> = ({
   apiUrl,
   cues,

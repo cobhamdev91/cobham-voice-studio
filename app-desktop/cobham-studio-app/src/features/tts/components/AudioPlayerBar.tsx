@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { toggleAudioPlayback } from "../playback";
 import type { PlaybackStatus } from "../types";
 
+/** Props cho thanh phát âm thanh, điều khiển tiến độ và tải xuống bản đọc. */
 interface AudioPlayerBarProps {
   audioBlob: Blob | null;
   audioBlobUrl: string | null;
@@ -68,6 +69,7 @@ const waveBarHeight = (
   return 3 + Math.sin(Date.now() / 150 + i) * 6;
 };
 
+/** Thanh phát âm thanh dùng chung dưới đáy workspace: sóng âm, nút tạo/dừng, tuỳ chọn phụ đề/ổn định và xuất file. */
 export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
   status,
   playbackSpeed = 1,
@@ -133,9 +135,11 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
   const [duration, setDuration] = useState<number>(0);
 
   // Đồng bộ âm lượng với phần tử âm thanh
+  // biome-ignore lint/correctness/useExhaustiveDependencies: audioElRef là RefObject giữ nguyên tham chiếu giữa các lần render
   useEffect(() => {
-    if (audioElRef.current) {
-      audioElRef.current.volume = volume;
+    const audio = audioElRef.current;
+    if (audio) {
+      audio.volume = volume;
     }
   }, [volume]);
 
@@ -243,6 +247,7 @@ export const AudioPlayerBar: React.FC<AudioPlayerBarProps> = ({
   return (
     <div className="studio-audio-player">
       {/* Phần tử âm thanh giữ trong nền */}
+      {/* biome-ignore lint/a11y/useMediaCaption: audio tổng hợp từ văn bản đang soạn trong studio */}
       <audio
         className="hidden"
         onEmptied={() => onPlayingChange(false)}

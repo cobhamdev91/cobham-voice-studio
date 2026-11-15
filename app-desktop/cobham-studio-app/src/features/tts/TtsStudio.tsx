@@ -111,6 +111,7 @@ const DEFAULT_TEXT_FOREIGN = `Hello and welcome to ${APP_NAME}. This voice runs 
 // đúng bản cũ; đổi giá trị này sẽ đổi giọng của mọi bản "Ổn định" về sau.
 const STABLE_SEED = 20_251_021;
 
+/** Màn hình studio tổng hợp giọng nói chính, quản lý kết nối máy chủ, tab chức năng và trình phát chung. */
 export const TtsStudio: React.FC = () => {
   useEffect(() => {
     const frame = requestAnimationFrame(() =>
@@ -393,6 +394,8 @@ export const TtsStudio: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    // connectionAttempt tăng mỗi lần người dùng bấm Thử lại để chạy lại vòng polling.
+    void connectionAttempt;
     setConnectionStatus("connecting");
     setLoadingState("starting");
     setLoadingMessage("Đang kết nối tới dịch vụ giọng nói...");
@@ -474,7 +477,7 @@ export const TtsStudio: React.FC = () => {
         setErrorMessage(willRetry ? null : message);
       },
     });
-  }, [settings.apiUrl, connectionAttempt]);
+  }, [settings.apiUrl, connectionAttempt, loadHistory]);
 
   // Giọng tuỳ chỉnh đã được server lưu thật (xem VoiceCloningTab) - chỉ cần nạp
   // lại danh sách rồi chọn nó, không còn bookmark giả ở localStorage nữa.
@@ -587,16 +590,20 @@ export const TtsStudio: React.FC = () => {
       });
 
       setPlaybackStatus("idle");
-    } catch (err: any) {
+    } catch (err: unknown) {
       if (abortControllerRef.current !== controller) {
         return;
       }
-      if (err.name === "AbortError") {
+      if (err instanceof Error && err.name === "AbortError") {
         setPlaybackStatus("idle");
       } else {
         console.error("[TTS Error]", err);
         setPlaybackStatus("error");
-        setErrorMessage(err.message || "Lỗi trong quá trình tạo giọng nói");
+        setErrorMessage(
+          err instanceof Error && err.message
+            ? err.message
+            : "Lỗi trong quá trình tạo giọng nói"
+        );
       }
     } finally {
       // Yêu cầu đã huỷ không được xoá tiến trình của yêu cầu mới hơn.

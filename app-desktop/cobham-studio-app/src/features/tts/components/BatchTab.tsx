@@ -26,6 +26,7 @@ import type { VoiceOption } from "../types";
 import { groupVoices, voiceOptionLabel } from "../voice-label";
 import { createZip } from "../zip";
 
+/** Props cho tab tạo giọng nói hàng loạt theo từng đoạn đánh dấu `[P1]`, `[P2]`... */
 interface BatchTabProps {
   apiUrl: string;
   defaultVoiceId: string;
@@ -157,6 +158,7 @@ function BatchRow({
   );
 }
 
+/** Tab xử lý hàng loạt đoạn văn bản theo mốc `[P1]`, `[P2]` và đóng gói tải về `.zip`. */
 export const BatchTab: React.FC<BatchTabProps> = ({
   apiUrl,
   voices,

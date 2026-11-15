@@ -9,14 +9,15 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { APP_NAME } from "@/config/branding";
 import { convertToMp3, synthesizeConversation } from "../api";
 import { downloadBlobAsFile } from "../audio-engine";
 import { LanguageSelect, useModelCaps } from "../model-caps";
 import type { HistoryEntry, VoiceOption } from "../types";
 import { groupVoices, voiceOptionLabel } from "../voice-label";
 import { AdvancedGeneration, DEFAULT_TEMPERATURE } from "./AdvancedGeneration";
-import { APP_NAME } from "@/config/branding";
 
+/** Props cho tab tạo hội thoại nhiều nhân vật trong cùng một kịch bản. */
 interface ConversationTabProps {
   /** Tab dang hien. Tab an van giu trong DOM nen phai tu dung audio khi bi an. */
   active: boolean;
@@ -109,6 +110,7 @@ const SPEAKER_COLORS = [
   "from-indigo-500 to-sky-500",
 ];
 
+/** Tab tổng hợp hội thoại nhiều giọng đọc từ kịch bản có gắn tên nhân vật. */
 export const ConversationTab: React.FC<ConversationTabProps> = ({
   active,
   apiUrl,
@@ -165,8 +167,7 @@ export const ConversationTab: React.FC<ConversationTabProps> = ({
   const detectedSpeakers = useMemo(() => {
     const pattern = /^\s*(?:\[([^\]]+)\]|([^:]+))\s*:/gm;
     const speakers = new Set<string>();
-    let match: RegExpExecArray | null;
-    while ((match = pattern.exec(script)) !== null) {
+    for (const match of script.matchAll(pattern)) {
       const spk = (match[1] || match[2]).trim();
       if (spk) {
         speakers.add(spk);
@@ -290,8 +291,10 @@ export const ConversationTab: React.FC<ConversationTabProps> = ({
         mode: "conversation",
         format: "wav",
       });
-    } catch (err: any) {
-      setErrorMessage(err.message || "Lỗi khi tổng hợp hội thoại.");
+    } catch (err: unknown) {
+      setErrorMessage(
+        err instanceof Error ? err.message : "Lỗi khi tổng hợp hội thoại."
+      );
     } finally {
       setIsGenerating(false);
     }
@@ -589,6 +592,7 @@ export const ConversationTab: React.FC<ConversationTabProps> = ({
             </div>
 
             {/* Audio Player */}
+            {/* biome-ignore lint/a11y/useMediaCaption: audio hội thoại tổng hợp từ kịch bản ở cột trái */}
             <audio
               className="h-10 w-full"
               controls
