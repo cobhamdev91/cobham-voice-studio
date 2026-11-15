@@ -217,3 +217,24 @@ test("logo bo góc 6px, dùng indigo", () => {
   assert.match(logo, /border-radius:\s*6px/);
   assert.doesNotMatch(logo, /#0f766e|#0e7490/);
 });
+
+test("màu chip cảm xúc theo ngữ cảnh nền, không phụ thuộc theme", () => {
+  for (const name of ["--emotion-sky", "--emotion-emerald", "--emotion-amber", "--emotion-purple", "--emotion-slate"]) {
+    assert.ok(css.includes(`${name}:`), `thiếu biến ${name}`);
+  }
+  const canvas = block(".studio-canvas");
+  assert.match(canvas, /--emotion-sky:/);
+  assert.match(canvas, /--emotion-amber:/);
+  for (const name of ["--emotion-sky", "--emotion-emerald", "--emotion-amber", "--emotion-purple", "--emotion-slate"]) {
+    assert.match(block(".dark"), new RegExp(`${name}:`), `.dark thiếu ${name}`);
+  }
+});
+
+test("EmotionBar không dùng cặp màu dark: cho chip", () => {
+  const src = fs.readFileSync(
+    path.join(__dirname, "../src/features/tts/components/EmotionBar.tsx"),
+    "utf8"
+  );
+  assert.doesNotMatch(src, /text-(sky|emerald|amber|purple|slate)-\d{3}\s+dark:/);
+  assert.match(src, /--emotion-/);
+});
