@@ -20,6 +20,7 @@ import re
 import tempfile
 import threading
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -110,9 +111,15 @@ def fetch_latest() -> dict:
         "Accept": "application/vnd.github+json",
         "User-Agent": f"{APP_NAME}/{APP_VERSION}",
     })
-    with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS,
-                                context=https_context()) as response:
-        body = json.loads(response.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(request, timeout=TIMEOUT_SECONDS,
+                                    context=https_context()) as response:
+            body = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        if exc.code == 404:
+            # Kho phat hanh chua co ban nao -> khong phai loi, chi la chua co gi.
+            return {}
+        raise
     url = body.get("html_url") or ""
     # Chỉ mở trang của đúng kho phát hành, không tin link lạ trong phản hồi.
     if not url.startswith(f"https://github.com/{RELEASES_REPO}/"):
