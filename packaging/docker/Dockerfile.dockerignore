@@ -1,0 +1,20 @@
+# Chỉ dùng cho packaging/docker/Dockerfile (BuildKit đọc <Dockerfile>.dockerignore).
+# Danh sách CHO PHÉP: thư mục repo trên máy dev có dist/, models/, .venv... rất nặng.
+*
+!pyproject.toml
+!uv.lock
+!README.md
+!LICENSE
+!NOTICE
+!THIRD-PARTY-NOTICES.md
+!PRIVACY.md
+!DIEU-KHOAN.md
+!docs/cobham-studio.md
+!src/
+!apps/
+!app-desktop/cobham-studio-app/
+
+app-desktop/cobham-studio-app/node_modules
+app-desktop/cobham-studio-app/dist
+**/__pycache__
+**/*.pyc

@@ -1,0 +1,50 @@
+# Thông báo phần mềm bên thứ ba - CIT Voice Studio
+
+CIT Voice Studio dùng các thành phần mã nguồn mở dưới đây. Mỗi thành phần giữ nguyên
+bản quyền và giấy phép của tác giả. Ghi công cho VieNeu-TTS, và các thành phần chỉ tải
+về máy khi người dùng bấm (hỗ trợ GPU, mô hình tải thêm), nằm trong file `NOTICE`.
+
+## Thư viện LGPL
+
+Các thư viện này được dùng **nguyên bản, không sửa đổi**, dưới dạng thư viện liên kết
+động nằm riêng trong thư mục cài đặt. Bạn có quyền thay chúng bằng bản khác tương thích.
+
+| Thành phần | Giấy phép | Mã nguồn |
+|---|---|---|
+| libsndfile (đọc/ghi WAV, MP3) | LGPL-2.1-or-later | https://github.com/libsndfile/libsndfile |
+| LAME (bộ mã MP3, trong libsndfile) | LGPL-2.0-or-later | https://lame.sourceforge.io |
+| mpg123 (bộ giải mã MP3, trong libsndfile) | LGPL-2.1 | https://www.mpg123.de |
+| libsoxr (đổi tần số lấy mẫu, qua gói `soxr`) | LGPL-2.1-or-later | https://github.com/dofuuz/python-soxr |
+
+Toàn văn LGPL-2.1 có trong thư mục cài đặt, file `_internal/_soundfile_data/COPYING`
+(bản Windows).
+
+## Mô hình AI kèm sẵn
+
+| Mô hình | Giấy phép | Nguồn |
+|---|---|---|
+| VieNeu-TTS v3 Turbo (ONNX int8) và bộ giọng có sẵn | Apache-2.0 | https://huggingface.co/pnnbao-ump/VieNeu-TTS-v3-Turbo |
+| MOSS Audio Tokenizer Nano (ONNX) | Apache-2.0 | https://huggingface.co/OpenMOSS-Team/MOSS-Audio-Tokenizer-Nano-ONNX |
+
+## Mô hình tải thêm khi dùng
+
+| Mô hình | Giấy phép | Nguồn |
+|---|---|---|
+| Supertonic 3 (Supertone Inc.) - giọng nước ngoài 31 ngôn ngữ, tải khi bạn bấm Tải về trong mục Mô hình. File `LICENSE` của giấy phép tải kèm mô hình. Giấy phép có danh sách cấm dùng (mạo danh khi không được đồng ý, lừa đảo, tin giả gây hại, nội dung do máy tạo mà không ghi rõ…) áp dụng cho mọi người dùng | OpenRAIL-M ([LICENSE](https://huggingface.co/supertone-oss-archive/supertonic-3/blob/main/LICENSE)) | https://huggingface.co/supertone-oss-archive/supertonic-3 (mã nguồn mẫu, MIT: https://github.com/supertone-oss-archive/supertonic, [LICENSE](https://github.com/supertone-oss-archive/supertonic/blob/main/LICENSE)) |
+| Kokoro-82M (hexgrad) - giọng nước ngoài 8 ngôn ngữ, tải khi bạn bấm Tải về trong mục Mô hình (bản CPU dùng bản ONNX, bản GPU dùng trọng số PyTorch gốc) | Apache-2.0 | https://huggingface.co/hexgrad/Kokoro-82M, https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX |
+
+## Kokoro: mã chạy mô hình và bộ tách âm
+
+Mã chạy Kokoro trên GPU (`apps/_kokoro_torch`) chép từ hexgrad/kokoro 0.9.4,
+Apache-2.0, kèm file LICENSE gốc. Bộ tách âm của Kokoro **không nằm trong bộ cài**: khi
+bạn bấm Tải về, máy bạn tự tải nó từ PyPI vào một thư mục riêng (`addons/`). Trong đó
+có `phonemizer` (GPL-3.0-or-later) và espeak-ng qua `espeakng-loader` (GPL-3.0); danh
+sách đầy đủ và giấy phép từng gói ghi trong `NOTICE`.
+
+## Các thư viện khác
+
+Ứng dụng còn dùng khoảng 90 thư viện mã nguồn mở theo giấy phép MIT, BSD, Apache-2.0,
+ISC, PSF, MPL-2.0 và SIL Open Font License 1.1, tiêu biểu: Python, NumPy, SciPy,
+ONNX Runtime, Hugging Face Hub, FastAPI, Uvicorn, pywebview, pythonnet, OpenSSL,
+PyInstaller (bộ khởi động GPL-2.0 kèm ngoại lệ cho phép phân phối), React, Radix UI,
+Lucide, Tailwind CSS, phông chữ Inter và Be Vietnam Pro. Bản quyền thuộc tác giả của từng thư viện.

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Cobham Studio
+Comment=Vietnamese text-to-speech and voice cloning
+Comment[vi]=Chuyển văn bản thành giọng nói tiếng Việt
+Exec=cobham-studio
+Icon=cobham-studio
+Terminal=true
+Categories=AudioVideo;Audio;
+Keywords=TTS;tieng viet;giong noi;voice;
