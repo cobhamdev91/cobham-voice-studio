@@ -31,12 +31,16 @@ function listKind(line: string): ListBlock["kind"] | null {
   return NUMBERED.test(line) ? "ol" : null;
 }
 
-// Thêm một dòng vào danh sách khối. Trả về true nếu khối cuối còn nhận dòng tiếp
-// theo (false sau dòng trống hoặc tiêu đề).
-function addLine(blocks: Block[], raw: string, open: boolean): boolean {
+// Thêm một dòng vào danh sách khối. Trả về khối cuối nếu còn nhận dòng tiếp
+// theo (undefined sau dòng trống hoặc tiêu đề).
+function addLine(
+  blocks: Block[],
+  raw: string,
+  last: Block | undefined
+): Block | undefined {
   const line = raw.trim();
   if (!line) {
-    return false;
+    return undefined;
   }
   const heading = HEADING.exec(line);
   if (heading) {
@@ -44,37 +48,38 @@ function addLine(blocks: Block[], raw: string, open: boolean): boolean {
       kind: heading[1].length === 1 ? "h1" : "h2",
       text: line.slice(heading[0].length),
     });
-    return false;
+    return undefined;
   }
-  const last = open ? blocks[blocks.length - 1] : undefined;
   const kind = listKind(line);
   if (kind) {
     const item = line.replace(kind === "ul" ? BULLET : NUMBERED, "");
     if (isList(last) && last.kind === kind) {
       last.items.push(item);
-    } else {
-      blocks.push({ kind, items: [item] });
+      return last;
     }
-    return true;
+    const block: ListBlock = { kind, items: [item] };
+    blocks.push(block);
+    return block;
   }
   // Dòng thụt vào là phần tiếp của mục danh sách đang dở.
   if (isList(last) && raw.startsWith(" ")) {
     last.items[last.items.length - 1] += ` ${line}`;
-    return true;
+    return last;
   }
   if (last?.kind === "p") {
     last.text += ` ${line}`;
-  } else {
-    blocks.push({ kind: "p", text: line });
+    return last;
   }
-  return true;
+  const block: Block = { kind: "p", text: line };
+  blocks.push(block);
+  return block;
 }
 
 function parse(markdown: string): Block[] {
   const blocks: Block[] = [];
-  let open = false;
+  let last: Block | undefined;
   for (const raw of markdown.replace(CRLF, "\n").split("\n")) {
-    open = addLine(blocks, raw, open);
+    last = addLine(blocks, raw, last);
   }
   return blocks;
 }

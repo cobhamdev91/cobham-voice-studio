@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import type React from "react";
 import { useEffect, useId, useRef, useState } from "react";
+import { APP_NAME } from "@/config/branding";
 import type { AppUpdateInfo } from "../api";
 import { checkServerHealth, fetchServerPort, saveServerPort } from "../api";
 import type { AppSettings, VoiceOption } from "../types";
@@ -26,7 +27,6 @@ import { ModelManager } from "./ModelManager";
 import { RemoteAccessPanel } from "./RemoteAccessPanel";
 import { RestartNotice, useAppRestart } from "./RestartNotice";
 import { SaveSettingsPanel } from "./SaveSettingsPanel";
-import { APP_NAME } from "@/config/branding";
 
 const TRAILING_SLASH = /\/$/;
 

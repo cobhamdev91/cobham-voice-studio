@@ -35,6 +35,8 @@ const initial = {
   current_file: "",
   message: "",
 };
+const noop = () => undefined;
+
 function render(status, props = {}) {
   return renderToStaticMarkup(
     createElement(exports.ModelOperationStatus, {
@@ -42,8 +44,8 @@ function render(status, props = {}) {
       cancelling: false,
       error: null,
       modelName: "Turbo FP32",
-      onCancel() {},
-      onRetry() {},
+      onCancel: noop,
+      onRetry: noop,
       status: { ...initial, ...status },
       ...props,
     })

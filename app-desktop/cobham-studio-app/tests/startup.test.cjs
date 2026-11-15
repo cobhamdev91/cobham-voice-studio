@@ -48,12 +48,12 @@ test("first-run preparation keeps polling past 200 checks and recovers after a t
   let calls = 0;
   const errors = [];
   polling.startStartupPolling({
-    check: async () => {
+    check: () => {
       calls += 1;
       if (calls === 302) {
-        throw new Error("temporary timeout");
+        return Promise.reject(new Error("temporary timeout"));
       }
-      return calls < 304 ? "loading" : "ready";
+      return Promise.resolve(calls < 304 ? "loading" : "ready");
     },
     onConnectionError: (_, retry) => errors.push(retry),
   });
@@ -71,15 +71,15 @@ test("connection budget resets after a loading response; retry starts a fresh lo
   const errors = [];
   const options = {
     maxFailures: 2,
-    check: async () => {
+    check: () => {
       calls += 1;
       if (calls === 2) {
-        return "loading";
+        return Promise.resolve("loading");
       }
       if (calls >= 6) {
-        return "ready";
+        return Promise.resolve("ready");
       }
-      throw new Error("offline");
+      return Promise.reject(new Error("offline"));
     },
     onConnectionError: (_, retry) => errors.push(retry),
   };
@@ -133,9 +133,9 @@ for (const method of ["checkServerHealth", "fetchVoices"]) {
   test(`${method} times out even if headers arrive but response body stalls`, async () => {
     const requests = [];
     const api = load("api.ts", {
-      fetch: async (url, { signal }) => {
+      fetch: (url, { signal }) => {
         requests.push(url);
-        return {
+        return Promise.resolve({
           ok: true,
           json: () =>
             new Promise((_, reject) => {
@@ -145,7 +145,7 @@ for (const method of ["checkServerHealth", "fetchVoices"]) {
                 { once: true }
               );
             }),
-        };
+        });
       },
     });
     const pending = api[method]("http://127.0.0.1:8002");

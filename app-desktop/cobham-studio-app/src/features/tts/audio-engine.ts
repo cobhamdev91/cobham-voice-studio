@@ -60,27 +60,35 @@ export class StreamingAudioEngine {
     analyser: AnalyserNode;
     gainNode: GainNode;
   } {
-    if (!this.audioCtx || this.audioCtx.state === "closed") {
+    if (
+      !(this.audioCtx && this.analyser && this.gainNode) ||
+      this.audioCtx.state === "closed"
+    ) {
       const AudioCtxClass =
         window.AudioContext ||
         (window as unknown as { webkitAudioContext: typeof AudioContext })
           .webkitAudioContext;
-      this.audioCtx = new AudioCtxClass();
+      const audioCtx = new AudioCtxClass();
 
-      this.analyser = this.audioCtx.createAnalyser();
-      this.analyser.fftSize = 128;
-      this.analyser.smoothingTimeConstant = 0.8;
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 128;
+      analyser.smoothingTimeConstant = 0.8;
 
-      this.gainNode = this.audioCtx.createGain();
-      this.gainNode.gain.setValueAtTime(this.volume, this.audioCtx.currentTime);
+      const gainNode = audioCtx.createGain();
+      gainNode.gain.setValueAtTime(this.volume, audioCtx.currentTime);
 
-      this.gainNode.connect(this.analyser);
-      this.analyser.connect(this.audioCtx.destination);
+      gainNode.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      this.audioCtx = audioCtx;
+      this.analyser = analyser;
+      this.gainNode = gainNode;
+      return { audioCtx, analyser, gainNode };
     }
     return {
       audioCtx: this.audioCtx,
-      analyser: this.analyser!,
-      gainNode: this.gainNode!,
+      analyser: this.analyser,
+      gainNode: this.gainNode,
     };
   }
 
@@ -243,8 +251,8 @@ export class StreamingAudioEngine {
 
     // Write PCM samples
     let index = 44;
-    for (let i = 0; i < samples.length; i++) {
-      view.setInt16(index, samples[i], true);
+    for (const sample of samples) {
+      view.setInt16(index, sample, true);
       index += 2;
     }
 
@@ -274,6 +282,45 @@ function blobToBase64(blob: Blob): Promise<string> {
   });
 }
 
+interface SaveFileResult {
+  cancelled?: boolean;
+  path?: string;
+  success?: boolean;
+}
+
+interface SavePickerHandle {
+  createWritable: () => Promise<{
+    close: () => Promise<void>;
+    write: (data: Blob) => Promise<void>;
+  }>;
+}
+
+interface DesktopSaveWindow {
+  pywebview?: {
+    api?: {
+      save_file?: (
+        filename: string,
+        base64Data: string
+      ) => Promise<SaveFileResult>;
+    };
+  };
+  showSaveFilePicker?: (options: {
+    suggestedName: string;
+    types?: Array<{
+      description: string;
+      accept: Record<string, string[]>;
+    }>;
+  }) => Promise<SavePickerHandle>;
+}
+
+function isUserCancelledError(err: unknown): boolean {
+  if (!err || typeof err !== "object") {
+    return false;
+  }
+  const candidate = err as { code?: number; name?: string };
+  return candidate.name === "AbortError" || candidate.code === 20;
+}
+
 /**
  * Tải file Blob về máy tính người dùng:
  * 1. Ưu tiên 1: Sử dụng Native Windows Save File Dialog qua PyWebView API (Desktop App EXE)
@@ -285,21 +332,18 @@ export async function downloadBlobAsFile(
   filename: string
 ): Promise<boolean> {
   const safeFilename = sanitizeFilename(filename);
+  const desktopWin = window as unknown as DesktopSaveWindow;
 
   // 1. PyWebView Desktop App Bridge (Windows Native Save As Dialog)
-  const pywebview = (window as any).pywebview;
-  if (
-    pywebview &&
-    pywebview.api &&
-    typeof pywebview.api.save_file === "function"
-  ) {
+  const saveFile = desktopWin.pywebview?.api?.save_file;
+  if (typeof saveFile === "function") {
     try {
       const base64Data = await blobToBase64(blob);
-      const res = await pywebview.api.save_file(safeFilename, base64Data);
-      if (res && res.cancelled) {
+      const res = await saveFile(safeFilename, base64Data);
+      if (res?.cancelled) {
         return false;
       }
-      if (res && res.success) {
+      if (res?.success) {
         notifySaved(res);
         return true;
       }
@@ -309,7 +353,8 @@ export async function downloadBlobAsFile(
   }
 
   // 2. Modern Browser File System Access API (Native Save File Dialog)
-  if (typeof (window as any).showSaveFilePicker === "function") {
+  const showSaveFilePicker = desktopWin.showSaveFilePicker;
+  if (typeof showSaveFilePicker === "function") {
     try {
       const isMp3 = safeFilename.toLowerCase().endsWith(".mp3");
       const isWav = safeFilename.toLowerCase().endsWith(".wav");
@@ -326,7 +371,7 @@ export async function downloadBlobAsFile(
           ? "Audio WAV (*.wav)"
           : "Tệp âm thanh";
 
-      const handle = await (window as any).showSaveFilePicker({
+      const handle = await showSaveFilePicker({
         suggestedName: safeFilename,
         types: ext
           ? [
@@ -344,8 +389,8 @@ export async function downloadBlobAsFile(
       await writable.write(blob);
       await writable.close();
       return true;
-    } catch (err: any) {
-      if (err && (err.name === "AbortError" || err.code === 20)) {
+    } catch (err: unknown) {
+      if (isUserCancelledError(err)) {
         // Người dùng nhấn Cancel / Hủy bỏ hộp thoại
         return false;
       }
@@ -514,8 +559,8 @@ export async function convertAudioToWav(
     view.setUint32(40, int16Samples.length * 2, true);
 
     let index = 44;
-    for (let i = 0; i < int16Samples.length; i++) {
-      view.setInt16(index, int16Samples[i], true);
+    for (const sample of int16Samples) {
+      view.setInt16(index, sample, true);
       index += 2;
     }
 

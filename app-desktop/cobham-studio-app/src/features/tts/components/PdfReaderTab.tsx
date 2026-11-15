@@ -29,18 +29,7 @@ interface DropzoneProps {
 /** Vùng thả file: cả khung là nút chọn file (input phủ kín, trong suốt). */
 function DocDropzone({ busy, onFile }: DropzoneProps) {
   return (
-    <div
-      className="doc-dropzone"
-      data-busy={busy || undefined}
-      onDragOver={(e) => e.preventDefault()}
-      onDrop={(e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files?.[0];
-        if (file) {
-          onFile(file);
-        }
-      }}
-    >
+    <div className="doc-dropzone" data-busy={busy || undefined}>
       <input
         accept=".pdf,.docx,.doc,.txt,.srt,.vtt"
         aria-label="Chọn file tài liệu hoặc phụ đề"
@@ -52,6 +41,14 @@ function DocDropzone({ busy, onFile }: DropzoneProps) {
             onFile(file);
           }
           e.target.value = "";
+        }}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          const file = e.dataTransfer.files?.[0];
+          if (file) {
+            onFile(file);
+          }
         }}
         type="file"
       />
@@ -168,9 +165,11 @@ export const PdfReaderTab: React.FC<PdfReaderTabProps> = ({
       const res = await extractPdfText(apiUrl, file, file.name);
       setExtractResult(res);
       setCleanedText(res.text);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setErrorMessage(
-        err.message || "Không thể trích xuất văn bản từ tài liệu này."
+        err instanceof Error && err.message
+          ? err.message
+          : "Không thể trích xuất văn bản từ tài liệu này."
       );
     } finally {
       setIsExtracting(false);

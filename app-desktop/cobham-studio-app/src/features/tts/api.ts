@@ -49,7 +49,7 @@ export interface SynthesisResult {
 
 const clean = (url: string) => url.replace(/\/+$/, "");
 
-export async function checkServerHealth(
+export function checkServerHealth(
   apiUrl: string,
   signal?: AbortSignal
 ): Promise<HealthResponse> {
@@ -88,7 +88,7 @@ async function fetchStartupJson<T>(
   }
 }
 
-export async function fetchVoices(
+export function fetchVoices(
   apiUrl: string,
   signal?: AbortSignal
 ): Promise<VoiceOption[]> {
@@ -556,9 +556,13 @@ export async function convertToMp3(
   return await response.blob();
 }
 
+export interface CurrentModelSummary {
+  name?: string;
+}
+
 export async function fetchModels(
   apiUrl: string
-): Promise<{ current: any; models: ModelOption[] }> {
+): Promise<{ current: CurrentModelSummary | null; models: ModelOption[] }> {
   const cleanUrl = clean(apiUrl);
   const response = await fetch(`${cleanUrl}/api/models`, { method: "GET" });
   if (!response.ok) {
@@ -571,7 +575,7 @@ export async function switchModel(
   apiUrl: string,
   modelName: string,
   device = "auto"
-): Promise<{ status: string; current: any }> {
+): Promise<{ status: string; current: CurrentModelSummary | null }> {
   const cleanUrl = clean(apiUrl);
   const response = await fetch(`${cleanUrl}/api/models/load`, {
     method: "POST",

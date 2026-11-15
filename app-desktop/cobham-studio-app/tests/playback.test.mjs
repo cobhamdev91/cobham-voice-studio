@@ -25,10 +25,11 @@ function player() {
     currentTime: 0,
     playCalls: 0,
     pauseCalls: 0,
-    async play() {
+    play() {
       this.playCalls += 1;
       this.paused = false;
       this.ended = false;
+      return Promise.resolve();
     },
     pause() {
       this.pauseCalls += 1;
@@ -112,9 +113,7 @@ test("Bấm Play rồi Pause nhanh xử lý lệnh phát đang chờ", async () 
 
 test("Lỗi trình duyệt từ chối phát không tạo unhandled rejection", async () => {
   const audio = player();
-  audio.play = async () => {
-    throw new Error("Playback denied");
-  };
+  audio.play = () => Promise.reject(new Error("Playback denied"));
   const originalWarn = console.warn;
   let warnings = 0;
   console.warn = () => {
