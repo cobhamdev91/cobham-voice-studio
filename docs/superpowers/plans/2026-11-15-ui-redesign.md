@@ -36,15 +36,16 @@ Năm trường hợp mà đặc tả hàm ý nhưng không task nào kiểm th�
 
 **Files:**
 - Modify: `app-desktop/cobham-studio-app/src/app/global.css` (khối `@theme` dòng 17–28, khối `:root` dòng 73, khối `.dark` dòng 121)
-- Create: `app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs`
+- Modify: `app-desktop/cobham-studio-app/package.json` (script `test`)
+- Create: `app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs`
 
 **Interfaces:**
 - Consumes: không có
-- Produces: các biến CSS `--canvas`, `--canvas-foreground`, `--canvas-muted`, `--canvas-border`, `--canvas-toolbar`, `--canvas-accent` (dùng ở Task 3–9); các key trong `global.css` mà test `tests/theme-tokens.test.mjs` sẽ khóa.
+- Produces: các biến CSS `--canvas`, `--canvas-foreground`, `--canvas-muted`, `--canvas-border`, `--canvas-toolbar`, `--canvas-accent` (dùng ở Task 3–9); các key trong `global.css` mà test `tests/theme-tokens.test.cjs` sẽ khóa.
 
 - [ ] **Step 1: Viết test failing**
 
-Tạo `app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs`:
+Tạo `app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs`:
 
 ```js
 "use strict";
@@ -120,7 +121,14 @@ test("thang brand là indigo, không còn teal", () => {
 
 - [ ] **Step 2: Chạy test để xác nhận fail**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Script `test` trong `package.json` hiện liệt kê tường minh từng file nên file mới sẽ
+không được chạy. Đổi sang tự động khám phá thư mục (Node 26 hỗ trợ):
+
+```json
+"test": "node --test tests/"
+```
+
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: FAIL — "Không tìm thấy block" hoặc "Thiếu biến --canvas".
 
 - [ ] **Step 3: Thêm nhóm token canvas vào `global.css`**
@@ -234,13 +242,13 @@ Trong khối `@theme`, thay 10 dòng `--color-brand-*` bằng:
 
 - [ ] **Step 7: Chạy test để xác nhận pass**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: PASS 6/6.
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs
+git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs
 git commit -m "feat(theme): them canvas toi, doi bang mau chrome sang indigo"
 ```
 
@@ -257,7 +265,7 @@ git commit -m "feat(theme): them canvas toi, doi bang mau chrome sang indigo"
 
 - [ ] **Step 1: Viết test failing**
 
-Thêm vào `app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs`:
+Thêm vào `app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs`:
 
 ```js
 const HTML_PATH = path.join(__dirname, "../index.html");
@@ -272,7 +280,7 @@ test("bootstrap nền canvas, không dùng nền sáng", () => {
 
 - [ ] **Step 2: Chạy test để xác nhận fail**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: FAIL — "bootstrap phải nền canvas #14161d".
 
 - [ ] **Step 3: Sửa `index.html`**
@@ -290,13 +298,13 @@ Trong `<style>` của `index.html`:
 
 - [ ] **Step 4: Chạy test để xác nhận pass**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: PASS 7/7.
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add app-desktop/cobham-studio-app/index.html app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs
+git add app-desktop/cobham-studio-app/index.html app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs
 git commit -m "feat(ui): bootstrap ve noi dung canvas toi, khong nhay trang"
 ```
 
@@ -314,7 +322,7 @@ git commit -m "feat(ui): bootstrap ve noi dung canvas toi, khong nhay trang"
 
 - [ ] **Step 1: Viết test failing**
 
-Thêm vào `tests/theme-tokens.test.mjs`:
+Thêm vào `tests/theme-tokens.test.cjs`:
 
 ```js
 test("editor dùng nền canvas, chữ canvas, bo góc 10px", () => {
@@ -366,7 +374,7 @@ test("không bề mặt nào trong vùng canvas dùng nhầm màu chrome", () =>
 
 - [ ] **Step 2: Chạy test để xác nhận fail**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: FAIL — "editor dùng nền canvas".
 
 - [ ] **Step 3: Sửa `.studio-text-editor` trong `global.css`**
@@ -469,7 +477,7 @@ Trong `TextEditor.tsx`, tìm phần tử gốc có class `studio-text-editor` v�
 
 - [ ] **Step 7: Chạy test để xác nhận pass**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: PASS 12/12.
 
 - [ ] **Step 8: Kiểm tra typecheck vẫn sạch**
@@ -480,7 +488,7 @@ Expected: không output lỗi.
 - [ ] **Step 9: Commit**
 
 ```bash
-git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/src/features/tts/components/TextEditor.tsx app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs
+git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/src/features/tts/components/TextEditor.tsx app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs
 git commit -m "feat(ui): vung soan thao chuyen nen canvas toi"
 ```
 
@@ -498,7 +506,7 @@ git commit -m "feat(ui): vung soan thao chuyen nen canvas toi"
 
 - [ ] **Step 1: Viết test failing**
 
-Thêm vào `tests/theme-tokens.test.mjs`:
+Thêm vào `tests/theme-tokens.test.cjs`:
 
 ```js
 test("player là bề mặt riêng, nền canvas-toolbar, không trong suốt", () => {
@@ -517,7 +525,7 @@ test("player trong layout TTS không bị gỡ nền nữa", () => {
 
 - [ ] **Step 2: Chạy test để xác nhận fail**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: FAIL — "player là bề mặt riêng".
 
 - [ ] **Step 3: Sửa `.studio-player` trong `global.css`**
@@ -580,7 +588,7 @@ nghĩa** (phụ đề, lỗi) — giữ nguyên, chỉ đảm bảo chúng đủ
 
 - [ ] **Step 6: Chạy test để xác nhận pass**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: PASS 14/14.
 
 - [ ] **Step 7: Kiểm tra typecheck**
@@ -591,7 +599,7 @@ Expected: không output lỗi.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/src/features/tts/components/AudioPlayerBar.tsx app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs
+git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/src/features/tts/components/AudioPlayerBar.tsx app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs
 git commit -m "feat(ui): thanh phat thanh transport bar co be mat rieng"
 ```
 
@@ -609,7 +617,7 @@ git commit -m "feat(ui): thanh phat thanh transport bar co be mat rieng"
 
 - [ ] **Step 1: Viết test failing**
 
-Thêm vào `tests/theme-tokens.test.mjs`:
+Thêm vào `tests/theme-tokens.test.cjs`:
 
 ```js
 test("panel điều khiển có ranh giới section và nút dính đáy", () => {
@@ -625,15 +633,18 @@ test("nhãn section dùng font mono, chữ nhỏ, uppercase", () => {
   assert.match(heading, /letter-spacing:\s*0\.08em/);
 });
 
-test("khối cuối panel dính đáy", () => {
-  const props = block(".studio-properties");
-  assert.match(props, /position:\s*sticky/);
+test("nút chính dính đáy panel", () => {
+  assert.match(
+    block(".studio-properties .studio-primary"),
+    /margin-top:\s*auto/,
+    "nút Tạo giọng đọc phải dính đáy panel"
+  );
 });
 ```
 
 - [ ] **Step 2: Chạy test để xác nhận fail**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: FAIL — "panel điều khiển có ranh giới section".
 
 - [ ] **Step 3: Sửa `.studio-properties` trong `global.css`**
@@ -679,7 +690,8 @@ Trong `VoiceSelector.tsx`, khối panel chứa danh sách giọng hiện dùng c
 - section chứa "Tốc độ đọc"
 - section chứa "Tuỳ chọn nâng cao"
 
-Nút "Tạo giọng đọc" (`.studio-primary`) phải nằm ở khối cuối cùng, cách khối trên bằng `margin-top: auto` để dính đáy panel:
+Nút "Tạo giọng đọc" (`.studio-primary`) phải nằm ở khối cuối cùng và dính đáy panel.
+Thêm vào `global.css`:
 
 ```css
 .studio-properties .studio-primary {
@@ -689,7 +701,7 @@ Nút "Tạo giọng đọc" (`.studio-primary`) phải nằm ở khối cuối c
 
 - [ ] **Step 6: Chạy test để xác nhận pass**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: PASS 17/17.
 
 - [ ] **Step 7: Kiểm tra typecheck**
@@ -700,7 +712,7 @@ Expected: không output lỗi.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/src/features/tts/components/VoiceSelector.tsx app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs
+git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/src/features/tts/components/VoiceSelector.tsx app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs
 git commit -m "feat(ui): panel dieu khien thanh rack co section va nut dinh day"
 ```
 
@@ -718,7 +730,7 @@ git commit -m "feat(ui): panel dieu khien thanh rack co section va nut dinh day"
 
 - [ ] **Step 1: Viết test failing**
 
-Thêm vào `tests/theme-tokens.test.mjs`:
+Thêm vào `tests/theme-tokens.test.cjs`:
 
 ```js
 test("sidebar có nền riêng khác header", () => {
@@ -735,7 +747,7 @@ test("logo bo góc 6px, dùng indigo", () => {
 
 - [ ] **Step 2: Chạy test để xác nhận fail**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: FAIL — "sidebar có nền riêng khác header".
 
 - [ ] **Step 3: Sửa `.studio-sidebar`**
@@ -785,7 +797,7 @@ Trong `Header.tsx`:
 
 - [ ] **Step 6: Chạy test để xác nhận pass**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: PASS 19/19.
 
 - [ ] **Step 7: Kiểm tra typecheck**
@@ -796,7 +808,7 @@ Expected: không output lỗi.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/src/features/tts/components/Header.tsx app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs
+git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/src/features/tts/components/Header.tsx app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs
 git commit -m "feat(ui): sidebar tach nen rieng, header gon hon"
 ```
 
@@ -816,7 +828,7 @@ git commit -m "feat(ui): sidebar tach nen rieng, header gon hon"
 
 - [ ] **Step 1: Viết test failing**
 
-Thêm vào `tests/theme-tokens.test.mjs`:
+Thêm vào `tests/theme-tokens.test.cjs`:
 
 ```js
 test("màu chip cảm xúc theo ngữ cảnh nền, không phụ thuộc theme", () => {
@@ -845,7 +857,7 @@ test("EmotionBar không dùng cặp màu dark: cho chip", () => {
 
 - [ ] **Step 2: Chạy test để xác nhận fail**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: FAIL — "thiếu biến --emotion-sky".
 
 - [ ] **Step 3: Thêm token màu cảm xúc vào `global.css`**
@@ -906,7 +918,7 @@ Icon `Sparkles` dùng class `text-amber-600 dark:text-amber-400` → đổi sang
 
 - [ ] **Step 5: Chạy test để xác nhận pass**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: PASS 21/21.
 
 - [ ] **Step 6: Kiểm tra typecheck**
@@ -917,7 +929,7 @@ Expected: không output lỗi. Nếu `item.color` được dùng ở nơi khác 
 - [ ] **Step 7: Commit**
 
 ```bash
-git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/src/features/tts/components/EmotionBar.tsx app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs
+git add app-desktop/cobham-studio-app/src/app/global.css app-desktop/cobham-studio-app/src/features/tts/components/EmotionBar.tsx app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs
 git commit -m "feat(ui): mau chip cam xuc theo ngu canh nen canvas"
 ```
 
@@ -947,7 +959,7 @@ phần còn lại của app.
 
 - [ ] **Step 1: Viết test failing**
 
-Thêm vào `tests/theme-tokens.test.mjs`:
+Thêm vào `tests/theme-tokens.test.cjs`:
 
 ```js
 const SRC = path.join(__dirname, "../src");
@@ -1006,7 +1018,7 @@ test("số liệu dùng font mono", () => {
 
 - [ ] **Step 2: Chạy test để xác nhận fail**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: FAIL — danh sách "còn màu bề mặt hardcode" và "còn màu teal cũ".
 
 - [ ] **Step 3: Đưa số liệu về font mono**
@@ -1053,7 +1065,7 @@ Expected: FAIL — danh sách "còn màu bề mặt hardcode" và "còn màu tea
 
 - [ ] **Step 6: Chạy test để xác nhận pass**
 
-Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.mjs`
+Run: `cd app-desktop/cobham-studio-app && node --test tests/theme-tokens.test.cjs`
 Expected: PASS 24/24.
 
 - [ ] **Step 7: Kiểm tra typecheck**
@@ -1064,7 +1076,7 @@ Expected: không output lỗi.
 - [ ] **Step 8: Commit**
 
 ```bash
-git add app-desktop/cobham-studio-app/src app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs
+git add app-desktop/cobham-studio-app/src app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs
 git commit -m "refactor(ui): so lieu dung font mono, don mau hardcode va gradient teal"
 ```
 
@@ -1074,7 +1086,7 @@ git commit -m "refactor(ui): so lieu dung font mono, don mau hardcode va gradien
 
 **Files:**
 - Modify: không có (chỉ kiểm chứng)
-- Test: `app-desktop/cobham-studio-app/tests/theme-tokens.test.mjs`
+- Test: `app-desktop/cobham-studio-app/tests/theme-tokens.test.cjs`
 
 **Interfaces:**
 - Consumes: mọi thay đổi từ Task 1–8

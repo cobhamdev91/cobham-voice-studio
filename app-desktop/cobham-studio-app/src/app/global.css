@@ -19,17 +19,17 @@
   --text-xs--line-height: 1.4;
   --font-sans: "Inter Variable", "Segoe UI", system-ui, sans-serif;
   --font-heading: "Be Vietnam Pro", "Inter Variable", "Segoe UI", sans-serif;
-  --color-brand-50: #f0fdfa;
-  --color-brand-100: #ccfbf1;
-  --color-brand-200: #99f6e4;
-  --color-brand-300: #5eead4;
-  --color-brand-400: #2dd4bf;
-  --color-brand-500: #0d9488;
-  --color-brand-600: #0f766e;
-  --color-brand-700: #115e59;
-  --color-brand-800: #134e4a;
-  --color-brand-900: #0f3d3a;
-  --color-brand-950: #042f2e;
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+  --color-brand-950: #1e1b4b;
 }
 
 @theme inline {
@@ -71,96 +71,111 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: #eef3f2;
-  --foreground: #0f172a;
+  --radius: 0.5rem;
+  --background: #eceef1;
+  --foreground: #14161a;
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #14161a;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #0f766e;
+  --popover-foreground: #14161a;
+  --primary: #4f46e5;
   --primary-foreground: #ffffff;
-  --secondary: #e6eeee;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #334155;
-  /* Xanh ngọc dịu thay bạc hà #ccfbf1: nền bạc hà làm chữ teal trông nhoè. */
-  --accent: #def3ef;
-  --accent-foreground: #0b4f4a;
+  --secondary: #f1f3f6;
+  --secondary-foreground: #14161a;
+  --muted: #f4f5f7;
+  --muted-foreground: #5b6270;
+  /* Nền tím rất nhạt: chữ indigo trên nền này vẫn rõ. */
+  --accent: #eef0fe;
+  --accent-foreground: #3730a3;
   --destructive: #dc2626;
-  --border: #c9d6dd;
-  --input: #b8c8d9;
-  --ring: #0d9488;
+  --border: #dde0e6;
+  --input: #c9ced8;
+  --ring: #6366f1;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  /* Thanh bên sáng liền với thanh tiêu đề; mục đang chọn là khối teal đặc. */
-  --sidebar: #ffffff;
+  /* Thanh bên có nền riêng, tách khỏi thanh tiêu đề trắng. */
+  --sidebar: #f7f8fa;
   --sidebar-foreground: #1e293b;
-  --sidebar-primary: #5eead4;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: #0f766e;
+  --sidebar-primary: #818cf8;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #4f46e5;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #c9d6dd;
+  --sidebar-border: #dde0e6;
   --sidebar-ring: oklch(0.708 0 0);
 
   /* Màu nhấn phụ, dùng tiết kiệm: đang tạo, số đếm thanh bên, nút Cười. */
   --accent-warm: #c2410c;
-  --sidebar-muted: #0f766e;
-  --sidebar-hover: #e0f2ef;
-  --sidebar-hover-foreground: #115e59;
-  --sidebar-selected-shadow: 0 6px 14px -8px rgb(15 118 110 / 70%);
+  --sidebar-muted: #4f46e5;
+  --sidebar-hover: #eceef4;
+  --sidebar-hover-foreground: #3730a3;
+  --sidebar-selected-shadow: 0 6px 14px -8px rgb(79 70 229 / 70%);
 
   --shadow-sm: 0 1px 2px rgb(16 24 40 / 8%);
   --shadow-md:
-    0 1px 3px rgb(16 24 40 / 10%), 0 16px 36px -18px rgb(15 61 58 / 30%);
+    0 1px 3px rgb(16 24 40 / 8%), 0 16px 36px -20px rgb(20 22 29 / 45%);
+
+  /* Màn hình làm việc: luôn tối ở cả chế độ sáng và tối. */
+  --canvas: #14161d;
+  --canvas-foreground: #e8eaf0;
+  --canvas-muted: #98a0b2;
+  --canvas-border: #262a36;
+  --canvas-toolbar: #1b1e27;
+  --canvas-accent: #818cf8;
 }
 
 .dark {
-  --background: #020617;
-  --foreground: #f1f5f9;
-  --card: #0f172a;
-  --card-foreground: #f1f5f9;
-  --popover: #162239;
-  --popover-foreground: #f1f5f9;
-  --primary: #2dd4bf;
-  --primary-foreground: #042f2b;
-  --secondary: #1e293b;
-  --secondary-foreground: #f1f5f9;
-  --muted: #1e293b;
-  --muted-foreground: #a8b8ce;
-  --accent: #134e4a;
-  --accent-foreground: #99f6e4;
+  --background: #0b0c10;
+  --foreground: #e8eaf0;
+  --card: #121419;
+  --card-foreground: #e8eaf0;
+  --popover: #171a21;
+  --popover-foreground: #e8eaf0;
+  --primary: #818cf8;
+  --primary-foreground: #0b0c10;
+  --secondary: #1b1e27;
+  --secondary-foreground: #e8eaf0;
+  --muted: #171a21;
+  --muted-foreground: #99a0b0;
+  --accent: #232742;
+  --accent-foreground: #c7d2fe;
   --destructive: #f87171;
-  --border: #293b55;
-  --input: #415775;
-  --ring: #2dd4bf;
+  --border: #262a36;
+  --input: #333849;
+  --ring: #818cf8;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  /* Cùng tông xanh than với thanh tiêu đề và thẻ; teal chỉ ở mục đang chọn. Nền
-     teal tối riêng cho thanh bên làm lệch tông với phần còn lại. */
-  --sidebar: #0f172a;
+  /* Thanh bên tối hơn thẻ để tách khỏi thanh tiêu đề. */
+  --sidebar: #0e1015;
   --sidebar-foreground: #cbd5e1;
-  --sidebar-primary: #2dd4bf;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: rgb(45 212 191 / 14%);
-  --sidebar-accent-foreground: #99f6e4;
-  --sidebar-border: #293b55;
+  --sidebar-primary: #818cf8;
+  --sidebar-primary-foreground: #0b0c10;
+  --sidebar-accent: rgb(129 140 248 / 14%);
+  --sidebar-accent-foreground: #c7d2fe;
+  --sidebar-border: #262a36;
   --sidebar-ring: oklch(0.556 0 0);
 
   --accent-warm: #fb923c;
-  --sidebar-muted: #5eead4;
-  --sidebar-hover: #1e293b;
-  --sidebar-hover-foreground: #f1f5f9;
+  --sidebar-muted: #818cf8;
+  --sidebar-hover: #1b1e27;
+  --sidebar-hover-foreground: #e8eaf0;
   --sidebar-selected-shadow: none;
 
   --shadow-sm: none;
   --shadow-md: none;
+
+  /* Màn hình làm việc: luôn tối ở cả chế độ sáng và tối. */
+  --canvas: #14161d;
+  --canvas-foreground: #e8eaf0;
+  --canvas-muted: #98a0b2;
+  --canvas-border: #262a36;
+  --canvas-toolbar: #1b1e27;
+  --canvas-accent: #818cf8;
 }
 
 @layer base {
