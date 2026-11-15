@@ -21,8 +21,15 @@ import {
 } from "../api";
 import { convertAudioToWav, ReferenceTooLongError } from "../audio-engine";
 import { downloadHistoryAudio, fromServer } from "../history";
+import { useVoiceRecorder } from "../hooks/useVoiceRecorder";
 import { useModelCaps } from "../model-caps";
-import { REF_MAX_SECONDS } from "../ref-audio";
+import {
+  formatRecordDuration,
+  isSupportedRefAudio,
+  REF_MAX_SECONDS,
+  REF_SOURCE_ACCEPT,
+  REF_SOURCE_FORMATS,
+} from "../ref-audio";
 import type { HistoryEntry } from "../types";
 import { useCaretInsert } from "../use-caret-insert";
 import { EmotionBar } from "./EmotionBar";
@@ -43,9 +50,7 @@ interface VoiceCloningTabProps {
 
 // File được giải mã ngay trong trình duyệt rồi gửi WAV ngắn lên máy chủ, nên
 // nhận được mọi định dạng WebView2 giải mã được; chỉ mở các đuôi người dùng hay có.
-const SOURCE_EXTENSIONS = [".mp3", ".wav", ".m4a"];
-const SOURCE_ACCEPT = `${SOURCE_EXTENSIONS.join(",")},audio/mpeg,audio/wav,audio/mp4`;
-const SOURCE_FORMATS = "MP3, WAV hoặc M4A";
+// Các đuôi file mẫu giọng chuẩn được định nghĩa tập trung ở `ref-audio.ts`.
 /** Tab nhân bản giọng đọc cá nhân hoá, lưu mô hình giọng cục bộ và đọc thử văn bản. */
 export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
   apiUrl,
@@ -69,11 +74,6 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
   const [audioFile, setAudioFile] = useState<Blob | null>(null);
   const [audioPreviewUrl, setAudioPreviewUrl] = useState<string | null>(null);
   const [audioDuration, setAudioDuration] = useState<number | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [recordSeconds, setRecordSeconds] = useState(0);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const recordTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Bước 3: kiểm tra & lưu
   const [voiceName, setVoiceName] = useState("Giọng của tôi");
@@ -113,33 +113,7 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
     }
   }, [isActive, refreshConsent]);
 
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current?.state === "recording") {
-      mediaRecorderRef.current.stop();
-    }
-    setIsRecording(false);
-    if (recordTimerRef.current) {
-      clearInterval(recordTimerRef.current);
-      recordTimerRef.current = null;
-    }
-  }, []);
-
-  // Dừng micro khi rời tab (giữ bản nháp).
-  useEffect(() => {
-    if (!isActive) {
-      stopRecording();
-    }
-  }, [isActive, stopRecording]);
-
-  useEffect(() => {
-    return () => {
-      if (audioPreviewUrl) {
-        URL.revokeObjectURL(audioPreviewUrl);
-      }
-    };
-  }, [audioPreviewUrl]);
-
-  const handleRecorded = async (raw: Blob) => {
+  const handleRecorded = useCallback(async (raw: Blob) => {
     setIsPreparing(true);
     setErrorMessage(null);
     try {
@@ -161,12 +135,31 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
       setErrorMessage(
         err instanceof ReferenceTooLongError
           ? "File quá dài để xử lý. Hãy cắt đoạn giọng rõ 5–15 giây rồi thử lại."
-          : `Không đọc được âm thanh. Hãy chọn file ${SOURCE_FORMATS} hợp lệ hoặc thu âm lại.`
+          : `Không đọc được âm thanh. Hãy chọn file ${REF_SOURCE_FORMATS} hợp lệ hoặc thu âm lại.`
       );
     } finally {
       setIsPreparing(false);
     }
-  };
+  }, []);
+
+  const handleRecorderError = useCallback((message: string) => {
+    setErrorMessage(message);
+  }, []);
+
+  const { isRecording, recordSeconds, startRecording, stopRecording } =
+    useVoiceRecorder({
+      active: isActive,
+      onRecorded: handleRecorded,
+      onRecorderError: handleRecorderError,
+    });
+
+  useEffect(() => {
+    return () => {
+      if (audioPreviewUrl) {
+        URL.revokeObjectURL(audioPreviewUrl);
+      }
+    };
+  }, [audioPreviewUrl]);
 
   const changeSource = (source: "recording" | "file") => {
     if (source === inputSource) {
@@ -194,50 +187,18 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
     setAudioDuration(null);
     setSaveError(null);
     setSourceFileName(file.name);
-    const lowerName = file.name.toLowerCase();
-    if (!SOURCE_EXTENSIONS.some((ext) => lowerName.endsWith(ext))) {
+    if (!isSupportedRefAudio(file.name)) {
       setErrorMessage(
-        `Hãy chọn file ${SOURCE_FORMATS}. Mẫu nên có một người nói rõ, không nhạc nền.`
+        `Hãy chọn file ${REF_SOURCE_FORMATS}. Mẫu nên có một người nói rõ, không nhạc nền.`
       );
       return;
     }
     await handleRecorded(file);
   };
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      audioChunksRef.current = [];
-      const recorder = new MediaRecorder(stream);
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) {
-          audioChunksRef.current.push(e.data);
-        }
-      };
-      recorder.onstop = async () => {
-        for (const track of stream.getTracks()) {
-          track.stop();
-        }
-        await handleRecorded(
-          new Blob(audioChunksRef.current, {
-            type: recorder.mimeType || "audio/webm",
-          })
-        );
-      };
-      mediaRecorderRef.current = recorder;
-      recorder.start(100);
-      setIsRecording(true);
-      setRecordSeconds(0);
-      setErrorMessage(null);
-      recordTimerRef.current = setInterval(
-        () => setRecordSeconds((s) => s + 1),
-        1000
-      );
-    } catch (err) {
-      setErrorMessage(
-        `Không mở được micro: ${errorText(err, String(err))}. Hãy cho phép ứng dụng dùng micro trong cài đặt quyền riêng tư của hệ điều hành.`
-      );
-    }
+  const handleStartRecording = () => {
+    setErrorMessage(null);
+    return startRecording();
   };
 
   const handleSave = async () => {
@@ -404,8 +365,7 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
               </h3>
               {inputSource === "recording" && (
                 <span className="font-bold font-mono text-foreground text-sm">
-                  {String(Math.floor(recordSeconds / 60)).padStart(2, "0")}:
-                  {String(recordSeconds % 60).padStart(2, "0")}
+                  {formatRecordDuration(recordSeconds)}
                 </span>
               )}
               {inputSource === "recording" &&
@@ -422,7 +382,7 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
                   <button
                     className="flex items-center gap-1.5 rounded-lg bg-rose-500 px-3 py-1.5 font-semibold text-white text-xs disabled:cursor-not-allowed"
                     disabled={!canRecord}
-                    onClick={startRecording}
+                    onClick={handleStartRecording}
                     type="button"
                   >
                     <Mic className="h-3.5 w-3.5" />
@@ -433,7 +393,7 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
             {inputSource === "file" ? (
               <div className="space-y-2">
                 <input
-                  accept={SOURCE_ACCEPT}
+                  accept={REF_SOURCE_ACCEPT}
                   aria-label="Chọn file âm thanh làm mẫu giọng"
                   className="hidden"
                   disabled={isSaving || isPreparing}
@@ -454,7 +414,7 @@ export const VoiceCloningTab: React.FC<VoiceCloningTabProps> = ({
                   <FileUp aria-hidden="true" size={18} />
                   {isPreparing
                     ? "Đang chuẩn bị đoạn mẫu…"
-                    : `Chọn file ${SOURCE_FORMATS} từ máy`}
+                    : `Chọn file ${REF_SOURCE_FORMATS} từ máy`}
                 </button>
                 {sourceFileName && (
                   <p className="break-all text-[12px] text-muted-foreground">
